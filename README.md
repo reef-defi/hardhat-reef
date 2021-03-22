@@ -12,6 +12,10 @@ yarn build
 
 then include the plugin in your `hardhat` repo, either with `yarn link` or `yarn add`.
 
+## Usage
+
+The plugin exposes `hre.bodhi` object for interaction with the bodhi compatible chain.
+
 
 ## Testing
 
