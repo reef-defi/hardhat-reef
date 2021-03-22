@@ -1,9 +1,9 @@
 {
-  "name": "hardhat-ts-plugin-boilerplate",
+  "name": "hardhat-bodhi",
   "version": "0.0.1",
-  "description": "Hardhat TypeScript plugin boilerplate",
-  "repository": "github:nomiclabs/hardhat-ts-plugin-boilerplate",
-  "author": "Nomic Labs LLC",
+  "description": "Hardhat bodhi plugin",
+  "repository": "github:reef-defi/hardhat-bodhi",
+  "author": "Reef",
   "license": "MIT",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -43,5 +43,10 @@
   },
   "peerDependencies": {
     "hardhat": "^2.0.0"
+  },
+  "dependencies": {
+    "@acala-network/bodhi": "^0.2.1",
+    "@polkadot/api": "^4.2.1",
+    "ethers": "5.0.21"
   }
 }
