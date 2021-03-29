@@ -9,6 +9,7 @@ export interface ProxyProvider {
 }
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
+  path: string;
   seed?: string;
 }
 
