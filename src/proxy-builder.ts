@@ -1,9 +1,8 @@
-import { HardhatPluginError } from "hardhat/plugins";
 import { HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 
 import { BodhiProxy } from "./proxies/BodhiProxy";
 import EthersProxy from "./proxies/EthersProxy";
-import { GANATCH_CHAIN, ProxyProvider, REEF_CHAIN } from "./types";
+import { ProxyProvider, REEF_CHAIN } from "./types";
 
 export const proxyBuilder = (
   chain: string,
@@ -15,12 +14,7 @@ export const proxyBuilder = (
         hre.config.networks.reef.url,
         hre.config.networks.reef.seed
       );
-    case GANATCH_CHAIN:
-      return new EthersProxy(hre.ethers);
     default:
-      throw new HardhatPluginError(
-        "Reef-provider",
-        `Unknown chain! Avaliable: [${REEF_CHAIN}, ${GANATCH_CHAIN}]`
-      );
+      return new EthersProxy(hre.ethers);
   }
 };
