@@ -1,11 +1,11 @@
-import { ContractFactory, Contract } from "ethers";
+import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
+import { Contract, ContractFactory } from "ethers";
 import type { ethers } from "ethers";
-import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types"
 import { HttpNetworkConfig } from "hardhat/types";
 
 export interface ProxyProvider {
   setup: () => Promise<void>;
-  getContractFactory: (contract: string) => Promise<ContractFactory>;  
+  getContractFactory: (contract: string) => Promise<ContractFactory>;
 }
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {

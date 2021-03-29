@@ -1,4 +1,5 @@
 import { ContractFactory } from "ethers";
+
 import { HardhatEthers, ProxyProvider } from "../types";
 import { loadContract } from "../utils";
 
@@ -9,12 +10,10 @@ export default class implements ProxyProvider {
     this.eth = _eth;
   }
 
-  public async setup() { }
+  public async setup() {}
   public async getContractFactory(contractName: string) {
     const contract = await loadContract(contractName);
     const [wallet] = await this.eth.getSigners();
-    return await ContractFactory
-      .fromSolidity(contract)
-      .connect(wallet);
+    return ContractFactory.fromSolidity(contract).connect(wallet);
   }
 }

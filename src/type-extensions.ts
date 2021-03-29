@@ -33,7 +33,6 @@ declare module "hardhat/types/config" {
   }
 }
 
-
 declare module "hardhat/types/runtime" {
   export interface HardhatRuntimeEnvironment {
     reef: ProxyProvider;
