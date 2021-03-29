@@ -9,7 +9,6 @@ import path from "path";
 import { startChain, stopChain } from "./chain-runner/chain-runner";
 import { proxyBuilder } from "./proxy-builder";
 import "./type-extensions";
-import { GANATCH_CHAIN, REEF_CHAIN } from "./types";
 import { defaultReefNetworkConfig, ensureFilePath } from "./utils";
 
 extendConfig(
@@ -33,7 +32,7 @@ extendConfig(
 // Configure Reef Network Parameters
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
-    const userReefNetwork = userConfig.networks!.reef;
+    const userReefNetwork = userConfig.networks?.reef;
     const reefNetworkConfig = userReefNetwork
       ? userReefNetwork
       : defaultReefNetworkConfig();
@@ -48,7 +47,7 @@ extendConfig(
     const userNetworkName = userConfig.networkName
       ? userConfig.networkName
       : "reef";
-
+   
     config.networkName = userNetworkName;
   }
 );
@@ -59,29 +58,19 @@ extendEnvironment((hre) => {
 });
 
 task(TASK_RUN, "Run script on Reef chain")
-  .addOptionalParam(
-    "chain",
-    `Run script on desired chain: ${REEF_CHAIN}, ${GANATCH_CHAIN}`,
-    REEF_CHAIN
-  )
-  .addOptionalParam("chainPath", "Path to the chain", "./../reef/reef-chain/")
   .setAction(
     async (
-      {
-        script,
-        chain,
-        chainPath,
-      }: { script: string; chain: string; chainPath: string },
-      { run, hardhatArguments }
+      { script }: { script: string; },
+      { run, hardhatArguments, config }
     ) => {
       try {
         await run("compile");
         await ensureFilePath(script);
-        await startChain(chain, chainPath, run);
+        await startChain(run, config);
         // TODO running provider.setup() does not work... Find out why!
         // await reef.setup();
         await runScriptWithHardhat(hardhatArguments, script);
-        await stopChain(chain, chainPath, run);
+        await stopChain(run, config);
       } catch (error) {
         throw new HardhatPluginError("Reef-chain-provider", error.message);
       }

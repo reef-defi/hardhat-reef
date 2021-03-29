@@ -1,16 +1,15 @@
 import { HardhatPluginError } from "hardhat/plugins";
-import { RunTaskFunction } from "hardhat/types";
+import { HardhatConfig, RunTaskFunction } from "hardhat/types";
 
 import { GANATCH_CHAIN, REEF_CHAIN } from "../types";
 
-export const startChain = (
-  chain: string,
-  chainPath: string,
-  run: RunTaskFunction
+export const startChain = async (
+  run: RunTaskFunction,
+  config: HardhatConfig
 ) => {
-  switch (chain) {
+  switch (config.networkName) {
     case REEF_CHAIN:
-      return run("start-reef-chain", { chain: chainPath });
+      return run("start-reef-chain", { chain: config.networks.reef.path });
     case GANATCH_CHAIN:
       return Promise.resolve();
     default:
@@ -18,14 +17,13 @@ export const startChain = (
   }
 };
 
-export const stopChain = (
-  chain: string,
-  chainPath: string,
-  run: RunTaskFunction
+export const stopChain = async (
+  run: RunTaskFunction,
+  config: HardhatConfig
 ) => {
-  switch (chain) {
+  switch (config.networkName) {
     case REEF_CHAIN:
-      return run("stop-reef-chain", { chain: chainPath });
+      return run("stop-reef-chain", { chain: config.networks.reef.path });
     case GANATCH_CHAIN:
       return Promise.resolve();
     default:
