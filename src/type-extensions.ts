@@ -4,7 +4,7 @@
 import "hardhat/types/config";
 import "hardhat/types/runtime";
 
-import { ProxyProvider } from "./types";
+import { ProxyProvider, ReefNetworkConfig } from "./types";
 
 declare module "hardhat/types/config" {
   export interface ProjectPathsUserConfig {
@@ -12,6 +12,15 @@ declare module "hardhat/types/config" {
   }
   export interface ProjectPathsConfig {
     newPath: string;
+  }
+}
+
+declare module "hardhat/types/config" {
+  export interface NetworksUserConfig {
+    reef?: ReefNetworkConfig;
+  }
+  export interface NetworksConfig {
+    reef: ReefNetworkConfig;
   }
 }
 
