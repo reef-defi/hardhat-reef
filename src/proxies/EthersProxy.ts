@@ -1,6 +1,6 @@
 import { ContractFactory } from "ethers";
 import { HardhatEthers, ProxyProvider } from "../types";
-import { ensureFilePath } from "../utils";
+import { loadContract } from "../utils";
 
 export default class implements ProxyProvider {
   private eth: HardhatEthers;
@@ -11,16 +11,10 @@ export default class implements ProxyProvider {
 
   public async setup() { }
   public async getContractFactory(contractName: string) {
-    const contractFile = `${process.cwd()}/artifacts/contracts/${contractName}.sol/${contractName}.json`;
-    await ensureFilePath(contractFile);
-    const contract = await require(contractFile);
-    
+    const contract = await loadContract(contractName);
     const [wallet] = await this.eth.getSigners();
-
-    const contractFactory = await ContractFactory
+    return await ContractFactory
       .fromSolidity(contract)
       .connect(wallet);
-
-    return contractFactory;
   }
 }
