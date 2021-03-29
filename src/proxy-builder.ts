@@ -7,7 +7,7 @@ import { GANATCH_CHAIN, ProxyProvider, REEF_CHAIN } from "./types";
 export const proxyBuilder = (chain: string, hre: HardhatRuntimeEnvironment): ProxyProvider => {
   switch (chain) {
     case REEF_CHAIN:
-      return new BodhiProxy()
+      return new BodhiProxy(hre.config.networks.reef.url, hre.config.networks.reef.seed);
     case GANATCH_CHAIN:
       return new EthersProxy(hre.ethers);
     default:
