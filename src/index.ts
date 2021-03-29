@@ -1,19 +1,17 @@
-import path from "path";
-import { extendEnvironment, task, extendConfig } from "hardhat/config";
-import { HardhatPluginError, lazyObject } from "hardhat/plugins";
+import "./type-extensions";
 import "@nomiclabs/hardhat-ethers";
-import { TASK_RUN } from "hardhat/builtin-tasks/task-names";
-import { runScriptWithHardhat } from "hardhat/internal/util/scripts-runner";
 
-// This import is needed to let the TypeScript compiler know that it should include your type
-// extensions in your npm package's types file.
-import { ensureFilePath } from "./utils";
-import { startChain, stopChain } from "./chain-runner/chain-runner";
+import path from "path";
+import { proxyBuilder } from "./proxy-builder";
 import { GANATCH_CHAIN, REEF_CHAIN } from "./types";
 import { HardhatConfig } from "hardhat/types/config";
 import { HardhatUserConfig } from "hardhat/types/config";
-import "./type-extensions";
-import { proxyBuilder } from "./proxy-builder";
+import { TASK_RUN } from "hardhat/builtin-tasks/task-names";
+import { HardhatPluginError, lazyObject } from "hardhat/plugins";
+import { defaultReefNetworkConfig, ensureFilePath } from "./utils";
+import { startChain, stopChain } from "./chain-runner/chain-runner";
+import { extendEnvironment, task, extendConfig } from "hardhat/config";
+import { runScriptWithHardhat } from "hardhat/internal/util/scripts-runner";
 
 
 extendConfig(
@@ -34,15 +32,29 @@ extendConfig(
   }
 );
 
+// Configure Reef Network Parameters
+extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
+  const userReefNetwork = userConfig.networks!["reef"];
+  const reefNetworkConfig = userReefNetwork
+    ? userReefNetwork
+    : defaultReefNetworkConfig();
+
+  config.networks.reef = reefNetworkConfig;
+});
+
+// Configure selected running network
 extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
   const userNetworkName = userConfig.networkName 
     ? userConfig.networkName 
     : "reef";
+
   config.networkName = userNetworkName;
 });
 
+// Extend proxyBuilder on reef object
 extendEnvironment((hre) => {
-  hre.reef = lazyObject(() => proxyBuilder(hre.config.networkName, hre));
+  hre.reef = lazyObject(() => 
+    proxyBuilder(hre.config.networkName, hre));
 });
 
 
