@@ -7,7 +7,7 @@ export const startChain = async (
   run: RunTaskFunction,
   config: HardhatConfig
 ) => {
-  switch (config.networkName) {
+  switch (config.defaultNetwork) {
     case REEF_CHAIN:
       return run("start-reef-chain", { chain: config.networks.reef.path });
     case GANATCH_CHAIN:
@@ -21,7 +21,7 @@ export const stopChain = async (
   run: RunTaskFunction,
   config: HardhatConfig
 ) => {
-  switch (config.networkName) {
+  switch (config.defaultNetwork) {
     case REEF_CHAIN:
       return run("stop-reef-chain", { chain: config.networks.reef.path });
     case GANATCH_CHAIN:

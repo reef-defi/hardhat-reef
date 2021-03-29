@@ -44,17 +44,17 @@ extendConfig(
 // Configure selected running network
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
-    const userNetworkName = userConfig.networkName
-      ? userConfig.networkName
+    const userNetworkName = userConfig.defaultNetwork
+      ? userConfig.defaultNetwork
       : "reef";
    
-    config.networkName = userNetworkName;
+    config.defaultNetwork = userNetworkName;
   }
 );
 
 // Extend proxyBuilder on reef object
 extendEnvironment((hre) => {
-  hre.reef = lazyObject(() => proxyBuilder(hre.config.networkName, hre));
+  hre.reef = lazyObject(() => proxyBuilder(hre.config.defaultNetwork, hre));
 });
 
 task(TASK_RUN, "Run script on Reef chain")

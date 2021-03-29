@@ -24,15 +24,6 @@ declare module "hardhat/types/config" {
   }
 }
 
-declare module "hardhat/types/config" {
-  interface HardhatUserConfig {
-    networkName?: string;
-  }
-  interface HardhatConfig {
-    networkName: string;
-  }
-}
-
 declare module "hardhat/types/runtime" {
   export interface HardhatRuntimeEnvironment {
     reef: ProxyProvider;
