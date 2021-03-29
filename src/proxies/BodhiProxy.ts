@@ -15,7 +15,7 @@ export class BodhiProxy implements ProxyProvider {
   public providerUrl: string;
   public seed: SeedType;
 
-  constructor(url = "ws://127.0.0.1:9944", seed?: SeedType) {
+  constructor(url: string, seed?: SeedType) {
     console.log(`Listening on: ${url}`);
     this.providerUrl = url;
     this.seed = seed;
@@ -29,7 +29,7 @@ export class BodhiProxy implements ProxyProvider {
     await this.provider.api.isReady;
 
     const pair = this.createKeyringPair();
-    const signingKey = new TestAccountSigningKey(this.provider.api.registry);
+    const signingKey = new TestAccountSigningKey(await this.provider.api.registry);
     signingKey.addKeyringPair(pair);
 
     this.wallet = new Signer(this.provider, pair.address, signingKey);

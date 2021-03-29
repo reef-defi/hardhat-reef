@@ -1,15 +1,14 @@
-import "@nomiclabs/hardhat-ethers";
-import { TASK_RUN } from "hardhat/builtin-tasks/task-names";
-import { extendConfig, extendEnvironment, task } from "hardhat/config";
-import { runScriptWithHardhat } from "hardhat/internal/util/scripts-runner";
-import { HardhatPluginError, lazyObject } from "hardhat/plugins";
-import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
-import path from "path";
-
-import { startChain, stopChain } from "./chain-runner/chain-runner";
-import { proxyBuilder } from "./proxy-builder";
+import "./built-in/run";
+import "./built-in/test";
 import "./type-extensions";
-import { defaultReefNetworkConfig, ensureFilePath } from "./utils";
+import "@nomiclabs/hardhat-ethers";
+
+import path from "path";
+import { lazyObject } from "hardhat/plugins";
+import { proxyBuilder } from "./proxy-builder";
+import { defaultReefNetworkConfig } from "./utils";
+import { extendConfig, extendEnvironment } from "hardhat/config";
+import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
 
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
@@ -56,23 +55,3 @@ extendConfig(
 extendEnvironment((hre) => {
   hre.reef = lazyObject(() => proxyBuilder(hre.config.defaultNetwork, hre));
 });
-
-task(TASK_RUN, "Run script on Reef chain")
-  .setAction(
-    async (
-      { script }: { script: string; },
-      { run, hardhatArguments, config }
-    ) => {
-      try {
-        await run("compile");
-        await ensureFilePath(script);
-        await startChain(run, config);
-        // TODO running provider.setup() does not work... Find out why!
-        // await reef.setup();
-        await runScriptWithHardhat(hardhatArguments, script);
-        await stopChain(run, config);
-      } catch (error) {
-        throw new HardhatPluginError("Reef-chain-provider", error.message);
-      }
-    }
-  );
