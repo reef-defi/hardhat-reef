@@ -6,7 +6,6 @@ import { HttpNetworkConfig } from "hardhat/types";
 export const REEF_CHAIN = "reef";
 
 export interface ProxyProvider {
-  setup: () => Promise<void>;
   getContractFactory: (contract: string) => Promise<ContractFactory>;
 }
 

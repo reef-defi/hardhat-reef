@@ -21,7 +21,7 @@ export class BodhiProxy implements ProxyProvider {
     this.seed = seed;
   }
 
-  public async setup() {
+  private async setup() {
     this.provider = new Provider({
       provider: new WsProvider(this.providerUrl),
     });
@@ -37,14 +37,11 @@ export class BodhiProxy implements ProxyProvider {
 
   public async getContractFactory(contractName: string) {
     if (!this.wallet || !this.provider) {
-      throw new HardhatPluginError(
-        "hardhat-bodhi",
-        "Run Chain provider setup!"
-      );
+      await this.setup();
     }
 
     const contract = await loadContract(contractName);
-    return ContractFactory.fromSolidity(contract).connect(this.wallet);
+    return ContractFactory.fromSolidity(contract).connect(this.wallet!);
   }
 
   private _createNewKeringPair(): KeyringPair {

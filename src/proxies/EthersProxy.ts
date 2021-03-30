@@ -10,7 +10,6 @@ export default class implements ProxyProvider {
     this.eth = _eth;
   }
 
-  public async setup() {}
   public async getContractFactory(contractName: string) {
     const contract = await loadContract(contractName);
     const [wallet] = await this.eth.getSigners();
