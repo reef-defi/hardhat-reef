@@ -15,8 +15,6 @@ task(TASK_RUN, "Run script on Reef chain")
       await run("compile");
       await ensureFilePath(script);
       await startChain(run, config);
-      // TODO running provider.setup() does not work... Find out why!
-      // await reef.setup();
       await runScriptWithHardhat(hardhatArguments, script);
       await stopChain(run, config);
     } catch (error) {
