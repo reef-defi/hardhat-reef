@@ -1,4 +1,5 @@
 import "./built-in/run";
+import "./built-in/chain";
 // import "./built-in/test";
 import "./type-extensions";
 import "@nomiclabs/hardhat-ethers";
