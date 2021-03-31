@@ -4,13 +4,9 @@ Hardhat reef plugin allows to deploy and interact with contracts through hardhat
 
 ## Installation
 
-To start working on your project, run
-
-```bash
-yarn build
 ```
-
-then include the plugin in your `hardhat` repo, either with `yarn link` or `yarn add`.
+yarn add @reef-defi/hardhat-reef 
+```
 
 ## Usage
 
@@ -33,3 +29,13 @@ All of Hardhat projects use [prettier](https://prettier.io/) and
 
 You can check if your code style is correct by running `yarn lint`, and fix
 it with `yarn lint:fix`.
+
+## Development
+
+To start working on your project, run
+
+```bash
+yarn build
+```
+
+then include the plugin in your `hardhat` repo with `yarn link`.
