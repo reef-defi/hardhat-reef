@@ -5,8 +5,8 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import { ContractFactory } from "ethers";
 import { HardhatPluginError } from "hardhat/plugins";
 
-import { ProxyProvider } from "../types";
-import {  loadContract } from "../utils";
+import { ProxyProvider, ReefNetworkConfig } from "../types";
+import {  accountsToArrayOfStrings, loadContract } from "../utils";
 import ReefSigner from "./ReefSigner";
 
 export class BodhiProxy implements ProxyProvider {
@@ -16,10 +16,10 @@ export class BodhiProxy implements ProxyProvider {
   private providerUrl: string;
   private seeds: string[];
 
-  constructor(url: string, seed: string[]=[]) {
-    console.log(`Listening on: ${url}`);
-    this.providerUrl = url;
-    this.seeds = [...seed];
+  constructor(config: ReefNetworkConfig) {
+    console.log(`Listening on: ${config.url}`);
+    this.providerUrl = config.url;
+    this.seeds = accountsToArrayOfStrings(config.accounts);
   }
 
   public async getContractFactory(contractName: string) {
@@ -56,7 +56,9 @@ export class BodhiProxy implements ProxyProvider {
       const signingKeys = new TestAccountSigningKey(BodhiProxy.provider!.api.registry);
       signingKeys.addKeyringPair(Object.values(testPairs));
 
-      const seedPairs = this.seeds.map((seed) => createSeedKeyringPair(seed));
+      const seedPairs = this.seeds
+        .map((seed) => createSeedKeyringPair(seed));
+
       signingKeys.addKeyringPair(seedPairs);
 
       const seedSigners = seedPairs

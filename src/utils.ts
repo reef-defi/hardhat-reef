@@ -28,3 +28,12 @@ export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
   httpHeaders: {},
   timeout: -1,
 });
+
+
+export const accountsToArrayOfStrings = (accounts: any): string[] => {
+  if (Array.isArray(accounts) && accounts.every(item => typeof item === "string")) {
+    return accounts as string[];
+  } else {
+    throw new HardhatPluginError("Hardhat-reef", "Reef chain allows only account of type: string[]");
+  }
+}
