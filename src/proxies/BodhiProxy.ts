@@ -6,7 +6,7 @@ import { ContractFactory } from "ethers";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {  accountsToArrayOfStrings, loadContract } from "../utils";
-import ReefSigner from "./ReefSigner";
+// import ReefSigner from "./ReefSigner";
 
 export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
