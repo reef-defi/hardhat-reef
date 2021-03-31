@@ -1,27 +1,18 @@
-import { extendConfig, extendEnvironment } from "hardhat/config";
-import { lazyObject } from "hardhat/plugins";
-import { HardhatConfig, HardhatUserConfig } from "hardhat/types";
-import path from "path";
-
-import { Bodhi } from "./Bodhi";
-// This import is needed to let the TypeScript compiler know that it should include your type
-// extensions in your npm package's types file.
+import "./built-in/run";
+import "./built-in/chain";
+// import "./built-in/test";
 import "./type-extensions";
+import "@nomiclabs/hardhat-ethers";
+
+import path from "path";
+import { lazyObject } from "hardhat/plugins";
+import { proxyBuilder } from "./proxy-builder";
+import { defaultReefNetworkConfig, defaultReefTestnetConfig } from "./utils";
+import { extendConfig, extendEnvironment } from "hardhat/config";
+import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
 
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
-    // We apply our default config here. Any other kind of config resolution
-    // or normalization should be placed here.
-    //
-    // `config` is the resolved config, which will be used during runtime and
-    // you should modify.
-    // `userConfig` is the config as provided by the user. You should not modify
-    // it.
-    //
-    // If you extended the `HardhatConfig` type, you need to make sure that
-    // executing this function ensures that the `config` object is in a valid
-    // state for its type, including its extentions. For example, you may
-    // need to apply a default value, like in this example.
     const userPath = userConfig.paths?.newPath;
 
     let newPath: string;
@@ -31,16 +22,42 @@ extendConfig(
       if (path.isAbsolute(userPath)) {
         newPath = userPath;
       } else {
-        // We resolve relative paths starting from the project's root.
-        // Please keep this convention to avoid confusion.
         newPath = path.normalize(path.join(config.paths.root, userPath));
       }
     }
-
     config.paths.newPath = newPath;
   }
 );
 
+// Configure Reef Network Parameters
+extendConfig(
+  (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
+    const userReefNetwork = userConfig.networks?.reef;
+    const testnetReefNetwork = userConfig.networks?.testnet_reef;
+
+    config.networks.reef = {
+      ...defaultReefNetworkConfig(),
+      ...userReefNetwork
+    };
+    config.networks.testnet_reef = {
+      ...defaultReefTestnetConfig(),
+      ...testnetReefNetwork
+    };
+  }
+);
+
+// Configure selected running network
+extendConfig(
+  (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
+    const userNetworkName = userConfig.defaultNetwork
+      ? userConfig.defaultNetwork
+      : "reef";
+   
+    config.defaultNetwork = userNetworkName;
+  }
+);
+
+// Extend proxyBuilder on reef object
 extendEnvironment((hre) => {
-  hre.bodhi = lazyObject(() => new Bodhi());
+  hre.reef = lazyObject(() => proxyBuilder(hre));
 });
