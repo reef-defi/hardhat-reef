@@ -10,6 +10,10 @@ export default class ReefChainService {
   }
 
   public createService() {
+    process.on("beforeExit", () => this.stopService());
+    process.on("SIGINT", () => this.stopService());
+    process.on("SIGTERM", () => this.stopService());
+
     ReefChainService.service = exec(`cd ${this.reefChainPath} && make eth`, (err) => {
       if (err) {
         throw new HardhatPluginError("Reef-chain", err.message);

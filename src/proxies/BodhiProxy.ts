@@ -44,7 +44,7 @@ export class BodhiProxy implements ProxyProvider {
         provider: new WsProvider(this.providerUrl),
       });
     }
-    await BodhiProxy.provider!.api.isReady;
+    await BodhiProxy.provider.api.isReady;
   }
 
   private async ensureWallets() {
