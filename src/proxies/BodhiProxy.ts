@@ -3,7 +3,6 @@ import { Keyring, WsProvider } from "@polkadot/api";
 import { createTestPairs } from "@polkadot/keyring/testingPairs";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { ContractFactory } from "ethers";
-import { HardhatPluginError } from "hardhat/plugins";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {  accountsToArrayOfStrings, loadContract } from "../utils";

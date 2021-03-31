@@ -29,6 +29,11 @@ export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
   timeout: -1,
 });
 
+export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
+  ...defaultReefNetworkConfig(),
+  url: "wss://rpc-testnet.reefscan.com/ws"
+})
+
 
 export const accountsToArrayOfStrings = (accounts: any): string[] => {
   if (Array.isArray(accounts) && accounts.every(item => typeof item === "string")) {

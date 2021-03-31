@@ -6,7 +6,7 @@ import "@nomiclabs/hardhat-ethers";
 import path from "path";
 import { lazyObject } from "hardhat/plugins";
 import { proxyBuilder } from "./proxy-builder";
-import { defaultReefNetworkConfig } from "./utils";
+import { defaultReefNetworkConfig, defaultReefTestnetConfig } from "./utils";
 import { extendConfig, extendEnvironment } from "hardhat/config";
 import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
 
@@ -39,7 +39,7 @@ extendConfig(
       ...userReefNetwork
     };
     config.networks.testnet_reef = {
-      ...defaultReefNetworkConfig(),
+      ...defaultReefTestnetConfig(),
       ...testnetReefNetwork
     };
   }
