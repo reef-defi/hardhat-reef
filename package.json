@@ -1,8 +1,8 @@
 {
-  "name": "hardhat-bodhi",
-  "version": "0.0.1",
-  "description": "Hardhat bodhi plugin",
-  "repository": "github:reef-defi/hardhat-bodhi",
+  "name": "@reef/hardhat-reef",
+  "version": "0.1.0",
+  "description": "Hardhat reefplugin",
+  "repository": "github:reef-defi/hardhat-reef",
   "author": "Reef",
   "license": "MIT",
   "main": "dist/src/index.js",
