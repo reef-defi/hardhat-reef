@@ -1,3 +1,4 @@
+import { HardhatPluginError } from "hardhat/plugins";
 import { HardhatConfig, RunTaskFunction } from "hardhat/types";
 import { REEF_CHAIN } from "../types";
 
@@ -6,16 +7,20 @@ export const startChain = async (
   chain: string,
   config: HardhatConfig,
 ) => {
-  const free = await isPortFree(config.networks.reef.url);
+  const free = await isPortFree();
 
   if (chain === REEF_CHAIN && free) {
-    return run("start-reef-chain", { chain: config.networks.reef.path });
+    if (!config.networks.reef.path) {
+      throw new HardhatPluginError("Hardhat-reef", "Configure path!");
+    } else {
+      return run("start-reef-chain", { chain: config.networks.reef.path });
+    }
   } else {
     return Promise.resolve();
   }
 };
 
-const isPortFree = async (url: string): Promise<boolean> => {
+const isPortFree = async (): Promise<boolean> => {
   return new Promise((resolve) => {
     var portscanner = require('portscanner');
     portscanner.checkPortStatus(9944, '127.0.0.1', (error: any, status: string) => {
