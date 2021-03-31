@@ -34,12 +34,14 @@ extendConfig(
     const userReefNetwork = userConfig.networks?.reef;
     const testnetReefNetwork = userConfig.networks?.testnet_reef;
 
-    config.networks.reef = userReefNetwork
-      ? userReefNetwork
-      : defaultReefNetworkConfig();
-    config.networks.testnet_reef = testnetReefNetwork
-      ? testnetReefNetwork
-      : defaultReefNetworkConfig();
+    config.networks.reef = {
+      ...defaultReefNetworkConfig(),
+      ...userReefNetwork
+    };
+    config.networks.testnet_reef = {
+      ...defaultReefNetworkConfig(),
+      ...testnetReefNetwork
+    };
   }
 );
 
@@ -56,5 +58,5 @@ extendConfig(
 
 // Extend proxyBuilder on reef object
 extendEnvironment((hre) => {
-  hre.reef = lazyObject(() => proxyBuilder(hre.config.defaultNetwork, hre));
+  hre.reef = lazyObject(() => proxyBuilder(hre));
 });
