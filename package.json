@@ -1,5 +1,5 @@
 {
-  "name": "@reef/hardhat-reef",
+  "name": "@reef-defi/hardhat-reef",
   "version": "0.1.0",
   "description": "Hardhat reefplugin",
   "repository": "github:reef-defi/hardhat-reef",
