@@ -20,7 +20,7 @@ export const loadContract = async (contractName: string): Promise<any> => {
 
 export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
   url: "ws://127.0.0.1:9944",
-  path: "./../reef/reef-chain/",
+  path: undefined,
   accounts: [],
   gas: -1,
   gasMultiplier: -1,
