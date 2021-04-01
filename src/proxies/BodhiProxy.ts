@@ -7,6 +7,7 @@ import { HardhatPluginError } from "hardhat/plugins";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {  accountsToArrayOfStrings, loadContract } from "../utils";
+import { ReefSigner } from "./signers/ReefSigner";
 
 export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -21,9 +22,11 @@ export class BodhiProxy implements ProxyProvider {
     this.seeds = accountsToArrayOfStrings(config.accounts);
   }
 
-  public async getContractFactory(contractName: string) {
+  public async getContractFactory(contractName: string, signer?: ReefSigner) {
     await this.ensureSetup();
-    const [wallet] = BodhiProxy.wallets;
+    const wallet = signer 
+      ? signer as Signer 
+      : BodhiProxy.wallets[0];
     const contract = await loadContract(contractName);
     return ContractFactory.fromSolidity(contract).connect(wallet);
   }
@@ -34,14 +37,13 @@ export class BodhiProxy implements ProxyProvider {
 
   public async getSigner(address: string) {
     const addresses = await Promise.all(
-      BodhiProxy.wallets
-        .map(async (wallet) => await wallet.getAddress()
-      ));
+      BodhiProxy.wallets.map(async (wallet) => await wallet.getAddress())
+    );
     const walletIndex = addresses
       .findIndex((addr) => addr === address);
 
     if (walletIndex === -1) {
-      throw new HardhatPluginError("Hardhat-reef", `Signer with address: ${addresses[walletIndex]}`)
+      throw new HardhatPluginError("Hardhat-reef", `Signer with address: ${addresses[walletIndex]} not found!`)
     }
     return BodhiProxy.wallets[walletIndex];
   }
