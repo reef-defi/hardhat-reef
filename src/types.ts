@@ -8,7 +8,7 @@ export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "testnet_reef";
 
 export interface ProxyProvider {
-  getContractFactory: (contract: string, signer?: ReefSigner) => Promise<ContractFactory>;
+  getContractFactory: (contract: string, signer?: ReefSigner | string) => Promise<ContractFactory>;
   getSigner(address: string): Promise<ReefSigner>;
   getSigners(): Promise<ReefSigner[]>;
 }

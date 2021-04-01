@@ -22,20 +22,20 @@ export class BodhiProxy implements ProxyProvider {
     this.seeds = accountsToArrayOfStrings(config.accounts);
   }
 
-  public async getContractFactory(contractName: string, signer?: ReefSigner) {
+  public async getContractFactory(contractName: string, signer?: ReefSigner | string) {
     await this.ensureSetup();
-    const wallet = signer 
-      ? signer as Signer 
-      : BodhiProxy.wallets[0];
+    const wallet = await this.resolveSigner(signer);
     const contract = await loadContract(contractName);
-    return ContractFactory.fromSolidity(contract).connect(wallet);
+    return ContractFactory.fromSolidity(contract).connect(wallet as Signer);
   }
 
   public async getSigners() {
+    await this.ensureSetup();
     return BodhiProxy.wallets;
   }
 
   public async getSigner(address: string) {
+    await this.ensureSetup();
     const addresses = await Promise.all(
       BodhiProxy.wallets.map(async (wallet) => await wallet.getAddress())
     );
@@ -46,6 +46,15 @@ export class BodhiProxy implements ProxyProvider {
       throw new HardhatPluginError("Hardhat-reef", `Signer with address: ${addresses[walletIndex]} not found!`)
     }
     return BodhiProxy.wallets[walletIndex];
+  }
+
+  private async resolveSigner(signer?: ReefSigner | string): Promise<ReefSigner> {
+    await this.ensureSetup();
+    if (signer === undefined)
+      return BodhiProxy.wallets[0];
+    if (typeof signer === "string")
+      return this.getSigner(signer);
+    return signer;
   }
 
   private async ensureSetup() {
