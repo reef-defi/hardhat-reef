@@ -3,10 +3,10 @@ import { Keyring, WsProvider } from "@polkadot/api";
 import { createTestPairs } from "@polkadot/keyring/testingPairs";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { ContractFactory } from "ethers";
+import { HardhatPluginError } from "hardhat/plugins";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {  accountsToArrayOfStrings, loadContract } from "../utils";
-// import ReefSigner from "./ReefSigner";
 
 export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -28,9 +28,22 @@ export class BodhiProxy implements ProxyProvider {
     return ContractFactory.fromSolidity(contract).connect(wallet);
   }
 
-  public async getSigner() {
-    const [wallet] = BodhiProxy.wallets;
-    return wallet;
+  public async getSigners() {
+    return BodhiProxy.wallets;
+  }
+
+  public async getSigner(address: string) {
+    const addresses = await Promise.all(
+      BodhiProxy.wallets
+        .map(async (wallet) => await wallet.getAddress()
+      ));
+    const walletIndex = addresses
+      .findIndex((addr) => addr === address);
+
+    if (walletIndex === -1) {
+      throw new HardhatPluginError("Hardhat-reef", `Signer with address: ${addresses[walletIndex]}`)
+    }
+    return BodhiProxy.wallets[walletIndex];
   }
 
   private async ensureSetup() {
