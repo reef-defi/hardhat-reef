@@ -34,6 +34,15 @@ export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
   url: "wss://rpc-testnet.reefscan.com/ws"
 })
 
+export const ensureExpression = (expression: boolean, message: string): void => {
+  if (!expression) {
+    throwError(message);
+  }
+}
+
+export const throwError = (message: string) => {
+  throw new HardhatPluginError("Hardhat-reef", message);
+}
 
 export const accountsToArrayOfStrings = (accounts: any): string[] => {
   if (Array.isArray(accounts) && accounts.every(item => typeof item === "string")) {
