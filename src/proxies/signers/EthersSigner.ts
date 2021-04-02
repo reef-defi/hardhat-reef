@@ -1,5 +1,10 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "ethers";
 import { ReefSigner } from "./ReefSigner";
+
+// Class is never used and is defined just for type testing purposes 
+// This implementation should be as follows but SignerWithAddress is a private class. This code is just his copy. 
+// export class ES extends SignerWithAddress implements ReefSigner {}
 
 export class EthersSigner extends ethers.Signer implements ReefSigner {
   public static async create(signer: ethers.providers.JsonRpcSigner) {
