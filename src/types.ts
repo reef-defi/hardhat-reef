@@ -1,14 +1,17 @@
 import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
-import { ContractFactory } from "ethers";
+import { Contract, ContractFactory } from "ethers";
 import type { ethers } from "ethers";
-import { HttpNetworkConfig } from "hardhat/types";
+import { Artifact, HttpNetworkConfig } from "hardhat/types";
 import { ReefSigner } from "./proxies/signers/ReefSigner";
 
 export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "testnet_reef";
 
+
 export interface ProxyProvider {
-  getContractFactory: (contract: string, signer?: ReefSigner | string) => Promise<ContractFactory>;
+  getContractAt: (nameOrAbi: string | Artifact, address: string, signer?: ReefSigner, args?: any[]) => Promise<Contract>;
+  getContractFactory: (contract: string, signer?: ReefSigner | string) => Promise<Contract>;
+
   getSigner(address: string): Promise<ReefSigner>;
   getSigners(): Promise<ReefSigner[]>;
 }

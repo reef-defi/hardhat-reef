@@ -2,12 +2,14 @@ import { Provider, Signer, TestAccountSigningKey, SigningKey } from "@acala-netw
 import { Keyring, WsProvider } from "@polkadot/api";
 import { createTestPairs } from "@polkadot/keyring/testingPairs";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { ContractFactory } from "ethers";
+import { Contract, ContractFactory } from "ethers";
 import { HardhatPluginError } from "hardhat/plugins";
+import { getContractAt } from "@nomiclabs/hardhat-ethers/internal/helpers";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
-import {  accountsToArrayOfStrings, loadContract } from "../utils";
+import { accountsToArrayOfStrings, loadContract } from "../utils";
 import { ReefSigner } from "./signers/ReefSigner";
+import { Artifact } from "hardhat/types";
 
 export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -22,11 +24,26 @@ export class BodhiProxy implements ProxyProvider {
     this.seeds = accountsToArrayOfStrings(config.accounts);
   }
 
-  public async getContractFactory(contractName: string, signer?: ReefSigner | string) {
+  public async getContractAt(nameOrAbi: string | Artifact, address: string, signer?: ReefSigner): Promise<Contract> {
+    const artifact = typeof nameOrAbi === "string"
+      ? await loadContract(nameOrAbi)
+      : nameOrAbi;
+
+    return new Contract(
+      address,
+      artifact.abi,
+      signer as Signer,
+    );
+  }
+
+  public async getContractFactory(contractName: string, signer?: ReefSigner | string, args?: any[]) {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
     const contract = await loadContract(contractName);
-    return ContractFactory.fromSolidity(contract).connect(wallet as Signer);
+    return ContractFactory
+      .fromSolidity(contract)
+      .connect(wallet as Signer)
+      .deploy(args ? args : true);
   }
 
   public async getSigners() {
