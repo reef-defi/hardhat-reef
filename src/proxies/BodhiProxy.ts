@@ -7,7 +7,7 @@ import { HardhatPluginError } from "hardhat/plugins";
 import { getContractAt } from "@nomiclabs/hardhat-ethers/internal/helpers";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
-import { accountsToArrayOfStrings, loadContract } from "../utils";
+import { accountsToArrayOfStrings, ensureExpression, loadContract } from "../utils";
 import { ReefSigner } from "./signers/ReefSigner";
 import { Artifact } from "hardhat/types";
 
@@ -24,7 +24,7 @@ export class BodhiProxy implements ProxyProvider {
     this.seeds = accountsToArrayOfStrings(config.accounts);
   }
 
-  public async getContractAt(nameOrAbi: string | Artifact, address: string, signer?: ReefSigner): Promise<Contract> {
+  public async getContractAt(nameOrAbi: string | any[], address: string, signer?: ReefSigner): Promise<Contract> {
     const artifact = typeof nameOrAbi === "string"
       ? await loadContract(nameOrAbi)
       : nameOrAbi;
@@ -36,7 +36,7 @@ export class BodhiProxy implements ProxyProvider {
     );
   }
 
-  public async getContractFactory(contractName: string, signer?: ReefSigner | string, args?: any[]) {
+  public async getContractFactory(contractName: string, args?: any[], signer?: ReefSigner | string) {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
     const contract = await loadContract(contractName);
@@ -59,9 +59,7 @@ export class BodhiProxy implements ProxyProvider {
     const walletIndex = addresses
       .findIndex((addr) => addr === address);
 
-    if (walletIndex === -1) {
-      throw new HardhatPluginError("Hardhat-reef", `Signer with address: ${addresses[walletIndex]} not found!`)
-    }
+    ensureExpression(walletIndex !== -1, `Signer with address: ${address} not found!`);
     return BodhiProxy.wallets[walletIndex];
   }
 

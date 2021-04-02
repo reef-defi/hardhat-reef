@@ -21,14 +21,11 @@ export default class implements ProxyProvider {
     return await this.eth.getSigners();
   }
 
-  public async getContractAt(nameOrAbi: string | Artifact, address: string, signer?: ReefSigner): Promise<Contract> {
-    if (typeof nameOrAbi === "string") {
-      await this.getContractFactory(nameOrAbi, signer);
-    }
-    return await this.eth.getContractAt(nameOrAbi as any, address, signer as SignerWithAddress);
+  public async getContractAt(nameOrAbi: string | any[], address: string, signer?: ReefSigner): Promise<Contract> {
+    return await this.eth.getContractAt(nameOrAbi, address, signer as SignerWithAddress);
   }
 
-  public async getContractFactory(contractName: string, signer?: ReefSigner | string, args?: any[]) {
+  public async getContractFactory(contractName: string, args?: any[], signer?: ReefSigner | string) {
     const contract = await loadContract(contractName);
     const wallet = await this.resolveSigner(signer) as SignerWithAddress;
     return ContractFactory
