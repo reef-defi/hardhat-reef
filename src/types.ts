@@ -7,7 +7,7 @@ import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract
 import { TypedDataDomain, TypedDataField, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { Bytes } from '@ethersproject/bytes';
 import { Deferrable } from '@ethersproject/properties';
-import { Provider, Signer } from "@acala-network/bodhi";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 
 export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "testnet_reef";
