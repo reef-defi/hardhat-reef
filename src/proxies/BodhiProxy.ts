@@ -1,4 +1,4 @@
-import { Provider, Signer, TestAccountSigningKey, SigningKey } from "@acala-network/bodhi";
+import { Provider, Signer, TestAccountSigningKey, SigningKey } from "@reef-defi/evm-provider";
 import { Keyring, WsProvider } from "@polkadot/api";
 import { createTestPairs } from "@polkadot/keyring/testingPairs";
 import { KeyringPair } from "@polkadot/keyring/types";
