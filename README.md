@@ -17,19 +17,19 @@ See [examples repo](https://github.com/reef-defi/hardhat-reef-examples) for exam
 ### Signers
 
 Get signers all signers.
-```
+```javascript
 const signers = await hre.reef.getSigners();
 const [signer1] = await hre.reef.getSigners();
 ```
 
 Get signer with address.
-```
+```javascript
 const address = "0x0000" // Address needs to be changed
 const singer = await hre.reef.getSigner(address);
 ```
 
 Access signers address and find it again.
-```
+```javascript
 const [signer1] = await hre.reef.getSigners();
 const address = await signer1.getAddress();
 const previousSigner = await hre.reef.getSigner(address);
@@ -39,30 +39,30 @@ console.log(address === await previousSigner.getAddress());
 
 Because each chain has different addresses, we introduce get signer by name method.
 Available names: `[alice, bob, charlie, dave, eve, ferdie]`.
-```
+```javascript
 const signer = await hre.reef.getSignerByName("alice");
 ```
 
 ### Contracts
 
 Creating contract factory.
-```
+```javascript
 const flipper = await hre.reef.getContractFactory("Flipper");
 ```
 
 Creating contract factory with arguments.
-```
+```javascript
 const flipper = await hre.reef.getContractFactory("Flipper", [true]);
 ```
 
 Creating contract factory with explicit signer.
-```
+```javascript
 const alice = await hre.reef.getSignerByName("alice");
 const flipper = await hre.reef.getContractFactory("Flipper", [], alice);
 ```
 
 Finding flipper contract through his address.
-```
+```javascript
 const flipper = await hre.reef.getContractFactory("Flipper", [], alice);
 const address = await flipper.address;
 const contract = await hre.reef.getContractAt("Flipper", address);
