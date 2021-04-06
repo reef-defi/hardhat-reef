@@ -1,5 +1,4 @@
 import { ChildProcess, exec, spawn } from "child_process";
-import { HardhatPluginError } from "hardhat/plugins";
 import { throwError } from "../utils";
 
 export default class ReefChainService {
@@ -8,7 +7,7 @@ export default class ReefChainService {
 
   public static async createService(chainPath: string) {
     console.log("Starting Reef-node service!");
-    ReefChainService.service = exec(`cd ${chainPath} && make eth`, (err) => {
+    ReefChainService.service = exec(`cd ${chainPath} && make run`, (err) => {
       if (err) {
         throwError(err.message);
       }
