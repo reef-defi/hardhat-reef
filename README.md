@@ -14,6 +14,61 @@ The plugin exposes `hre.reef` object for interaction with the bodhi compatible c
 See [examples repo](https://github.com/reef-defi/hardhat-reef-examples) for examples of usage.
 
 
+### Signers
+
+Get signers all signers.
+```
+const signers = await hre.reef.getSigners();
+const [signer1] = await hre.reef.getSigners();
+```
+
+Get signer with address.
+```
+const address = "0x0000" // Address needs to be changed
+const singer = await hre.reef.getSigner(address);
+```
+
+Access signers address and find it again.
+```
+const [signer1] = await hre.reef.getSigners();
+const address = await signer1.getAddress();
+const previousSigner = await hre.reef.getSigner(address);
+
+console.log(address === await previousSigner.getAddress());
+```
+
+Because each chain has different addresses, we introduce get signer by name method.
+Available names: `[alice, bob, charlie, dave, eve, ferdie]`.
+```
+const signer = await hre.reef.getSignerByName("alice");
+```
+
+### Contracts
+
+Creating contract factory.
+```
+const flipper = await hre.reef.getContractFactory("Flipper");
+```
+
+Creating contract factory with arguments.
+```
+const flipper = await hre.reef.getContractFactory("Flipper", [true]);
+```
+
+Creating contract factory with explicit signer.
+```
+const alice = await hre.reef.getSignerByName("alice");
+const flipper = await hre.reef.getContractFactory("Flipper", [], alice);
+```
+
+Finding flipper contract through his address.
+```
+const flipper = await hre.reef.getContractFactory("Flipper", [], alice);
+const address = await flipper.address;
+const contract = await hre.reef.getContractAt("Flipper", address);
+```
+
+
 ## Testing
 
 Running `yarn test` will run every test located in the `test/` folder. They
