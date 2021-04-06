@@ -3,6 +3,7 @@ import { HardhatConfig, RunTaskFunction } from "hardhat/types";
 import { URL } from "url";
 import { REEF_CHAIN } from "../types";
 import { ensureExpression } from "../utils";
+import ReefChainService from "./ReefChainService";
 
 export const startChain = async (
   run: RunTaskFunction,
@@ -14,15 +15,20 @@ export const startChain = async (
     const free = await isPortFree(url.hostname, Number(url.port));
 
     if (config.networks.reef.path) {
-      ensureExpression(free, "Port 9944 is already bound!")
-      return run("start-reef-chain", { chain: config.networks.reef.path });
+      ensureExpression(free, "Port 9944 is already bound!");
+      return await ReefChainService.createService(config.networks.reef.path);
     } else {
-      ensureExpression(!free, `Cannot connect to ${url}.`)
+      ensureExpression(!free, `Cannot connect to ${url}.`);
+      return Promise.resolve();
     }
   } else {
     return Promise.resolve();
   }
 };
+
+export const stopChain = async () => {
+  return await ReefChainService.stopService();
+}
 
 const isPortFree = async (host: string, port: number): Promise<boolean> => {
   return new Promise((resolve) => {

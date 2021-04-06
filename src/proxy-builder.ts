@@ -9,6 +9,8 @@ export const proxyBuilder = (
 ): ProxyProvider => {
   const network = hre.network;
   
+  
+
   switch(hre.network.name) {
     case REEF_CHAIN: 
       return new BodhiProxy(network.config as ReefNetworkConfig);
