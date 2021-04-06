@@ -3,7 +3,7 @@ import { Contract, ContractFactory } from "ethers";
 import { Artifact } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
-import { loadContract } from "../utils";
+import { loadContract, throwError } from "../utils";
 import { ReefSigner } from "./signers/ReefSigner";
 
 export default class implements ProxyProvider {
@@ -19,6 +19,14 @@ export default class implements ProxyProvider {
 
   public async getSigners(){
     return await this.eth.getSigners();
+  }
+
+  public async getSignerByName(name: string) {
+    const signers = await this.getSigners();
+    if (!(name in signerNames)) {
+      throwError("Signer name does not exist!");
+    }
+    return signers[signerNames[name]];
   }
 
   public async getContractAt(nameOrAbi: string | any[], address: string, signer?: ReefSigner): Promise<Contract> {
@@ -42,3 +50,9 @@ export default class implements ProxyProvider {
     return signer;
   }
 }
+
+const signerNames = ["alice", "bob", "charlie", "dave", "eve", "ferdie"]
+  .reduce((acc, name, index) => {
+    acc[name] = index;
+    return acc;
+  }, {} as {[name: string]: number});

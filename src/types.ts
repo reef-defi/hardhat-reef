@@ -14,6 +14,7 @@ export interface ProxyProvider {
 
   getSigner(address: string): Promise<ReefSigner>;
   getSigners(): Promise<ReefSigner[]>;
+  getSignerByName(name: string): Promise<ReefSigner>;
 }
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
