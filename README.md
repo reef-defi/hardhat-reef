@@ -37,9 +37,9 @@ const previousSigner = await hre.reef.getSigner(address);
 console.log(address === await previousSigner.getAddress());
 ```
 
-Get signer by name.
+Get signer by name.  
 Accessing the accounts set in hardhat config by `acc-{index}`, where index is the number pointing to desired account in array. Starting with 1.   
-Example: `acc-0`
+Example: `acc-0`  
 Available test signers: `[alice, bob, charlie, dave, eve, ferdie]`.
 ```javascript
 const signer = await hre.reef.getSignerByName("alice");
