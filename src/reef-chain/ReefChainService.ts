@@ -6,12 +6,20 @@ export default class ReefChainService {
   private static killReefProcessStatements = "ps -A | grep reef-node | grep -v grep | awk '{print $1}' | xargs kill -9";
 
   public static async createService(chainPath: string) {
-    console.log("Starting Reef-node service!");
-    ReefChainService.service = exec(`cd ${chainPath} && make run`, (err) => {
-      if (err) {
-        throwError(err.message);
-      }
-    });
+    await ReefChainService.buildChain(chainPath)
+    return new Promise((resolve, reject) => {
+      console.log("Starting Reef-node service!");
+      ReefChainService.service = exec(`cd ${chainPath} && make run`, (err) => {
+        if (err) {
+          reject(err.message);
+        }
+      });
+      // TODO timer is set to not show Provider warnings 
+      // this must be removed in future!
+      // timeout constant is also set to some high enough value to ensure chain 
+      // is up in running when the Provider is called.
+      setTimeout(() => resolve(1), 3300);
+    })
   }
 
   public static async stopService() {
@@ -42,15 +50,16 @@ export default class ReefChainService {
   //   this.buildChain();
   //  }
 
-  private buildChain(chainPath: string) {
-    return new Promise((resolve, reject) => {
-      const build = spawn(`cd ${chainPath} && make build`);
 
-      build.once("close", () => {
+  // TODO this does not 
+  private static async buildChain(chainPath: string) {
+    console.log("Building Reef chain");
+    return new Promise((resolve, reject) => {
+      exec(`cd ${chainPath} && make build`, (error) => {
+        if (error) {
+          reject(error.message);
+        }
         resolve(1);
-      });
-      build.once("error", () => {
-        reject();
       });
     })
   }
