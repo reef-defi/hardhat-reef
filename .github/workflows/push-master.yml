@@ -21,7 +21,7 @@ jobs:
         key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
     - name: Build
       if: steps.cache-modules.outputs.cache-hit != 'true'
-      run: yarn --frozen-lockfile
+      run: yarn --immutable
     - name: Test
       run: yarn test
   publish:
