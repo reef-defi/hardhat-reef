@@ -1,16 +1,16 @@
+import os from "os";
 import fs from "fs";
-import http from "https";
 import fetch from 'node-fetch';
 
-import { ChildProcess, exec, spawn } from "child_process";
-import { throwError } from "../utils";
+import { ChildProcess, exec } from "child_process";
 
-const REEF_NODE_FILE_PATH = "./reef-node";
+const REEF_NODE_FOLDER = `${os.homedir()}/.reef`;
+const REEF_NODE_FILE_PATH = `${REEF_NODE_FOLDER}/reef-node-2.1`;
 const UNIX_REEF_NODE_RELEASE = "https://github.com/reef-defi/reef-chain/releases/download/testnet-2.1/reef-node";
+const KILL_REEF_NODE_COMMAND = "ps -A | grep reef-node | grep -v grep | awk '{print $1}' | xargs kill -9";
 
 export default class ReefChainService {
   private static service: ChildProcess | undefined;
-  private static killReefProcessStatements = "ps -A | grep reef-node | grep -v grep | awk '{print $1}' | xargs kill -9";
 
   public static async createService() {
     await ReefChainService.pullChain();
@@ -40,7 +40,7 @@ export default class ReefChainService {
 
   private static async killReefProcess(): Promise<void> {
     return new Promise((resolve, reject) => {
-      exec(ReefChainService.killReefProcessStatements, (err) => {
+      exec(KILL_REEF_NODE_COMMAND, (err) => {
         err
           ? reject(err)
           : resolve();
@@ -50,6 +50,9 @@ export default class ReefChainService {
 
   // Pull reef chain from reef-chain release
   private static async pullChain() { 
+    if (!fs.existsSync(REEF_NODE_FOLDER)) {
+      fs.mkdirSync(REEF_NODE_FOLDER);
+    }
     if (!fs.existsSync(REEF_NODE_FILE_PATH)) {
       await downloadFile(
         UNIX_REEF_NODE_RELEASE,
