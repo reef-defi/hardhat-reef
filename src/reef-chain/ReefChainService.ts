@@ -50,22 +50,31 @@ export default class ReefChainService {
   }
 
   // Pull reef chain from reef-chain release
-  private static async pullChain() {
+  private static async pullChain(): Promise<void> {
     if (!fs.existsSync(REEF_NODE_FOLDER)) {
       fs.mkdirSync(REEF_NODE_FOLDER);
     }
     if (!fs.existsSync(REEF_NODE_FILE_PATH)) {
-      await downloadFile(UNIX_REEF_NODE_RELEASE, REEF_NODE_FILE_PATH);
+      const buffer = await downloadFile(UNIX_REEF_NODE_RELEASE);
+      await saveBufferToFile(buffer, REEF_NODE_FILE_PATH);
+      await addPermissions(REEF_NODE_FILE_PATH);
     }
   }
 }
 
-const downloadFile = async (url: string, filePath: string) => {
+const addPermissions = (filePath: string): Promise<void> => 
+  new Promise((resolve, reject) => {
+    exec(`chmod +x ${filePath}`, (err) => {
+      err ? reject(err) : resolve();
+    })
+  });
+
+
+const downloadFile = async (url: string): Promise<Buffer> => {
   console.log("Downloading reef-node...");
   return Promise.resolve()
     .then(() => fetch(url))
-    .then((data) => data.buffer())
-    .then((buffer) => saveBufferToFile(buffer, filePath));
+    .then((data) => data.buffer());
 };
 
 const saveBufferToFile = async (
