@@ -50,9 +50,10 @@ export class BodhiProxy implements ProxyProvider {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
     const contract = await loadContract(contractName);
+    const contractArguments = args ? args : [];
     return ContractFactory.fromSolidity(contract)
       .connect(wallet as Signer)
-      .deploy(args ? args : true);
+      .deploy(...contractArguments);
   }
 
   public async getSigners() {

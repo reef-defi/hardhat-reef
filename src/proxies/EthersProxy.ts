@@ -49,9 +49,10 @@ export default class implements ProxyProvider {
   ) {
     const contract = await loadContract(contractName);
     const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
+    const contractArguments = args ? args : [];
     return ContractFactory.fromSolidity(contract)
       .connect(wallet)
-      .deploy(args ? args : true);
+      .deploy(...contractArguments);
   }
 
   private async resolveSigner(
