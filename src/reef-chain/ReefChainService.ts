@@ -62,13 +62,12 @@ export default class ReefChainService {
   }
 }
 
-const addPermissions = (filePath: string): Promise<void> => 
+const addPermissions = (filePath: string): Promise<void> =>
   new Promise((resolve, reject) => {
     exec(`chmod +x ${filePath}`, (err) => {
       err ? reject(err) : resolve();
-    })
+    });
   });
-
 
 const downloadFile = async (url: string): Promise<Buffer> => {
   console.log("Downloading reef-node...");
