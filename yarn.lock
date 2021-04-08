@@ -3224,6 +3224,7 @@ __metadata:
     ethers: 5.0.21
     hardhat: ^2.0.0
     mocha: ^7.1.2
+    node-fetch: ^2.6.1
     portscanner: ^2.2.0
     prettier: 2.0.5
     ts-node: ^8.1.0
