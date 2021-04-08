@@ -14,7 +14,7 @@ task(TASK_RUN, "Run script on Reef chain")
     try {
       await run("compile");
       await ensureFilePath(script);
-      await startChain(run, network.name, config);
+      await startChain(network.name, config);
       await runScriptWithHardhat(hardhatArguments, script);
       await stopChain();
     } catch (error) {
