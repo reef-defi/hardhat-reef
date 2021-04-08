@@ -1,14 +1,14 @@
+import "@nomiclabs/hardhat-ethers";
+import { extendConfig, extendEnvironment } from "hardhat/config";
+import { lazyObject } from "hardhat/plugins";
+import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
+import path from "path";
+
 import "./built-in/run";
+import { proxyBuilder } from "./proxy-builder";
 // import "./built-in/test";
 import "./type-extensions";
-import "@nomiclabs/hardhat-ethers";
-
-import path from "path";
-import { lazyObject } from "hardhat/plugins";
-import { proxyBuilder } from "./proxy-builder";
 import { defaultReefNetworkConfig, defaultReefTestnetConfig } from "./utils";
-import { extendConfig, extendEnvironment } from "hardhat/config";
-import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
 
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
@@ -36,11 +36,11 @@ extendConfig(
 
     config.networks.reef = {
       ...defaultReefNetworkConfig(),
-      ...userReefNetwork
+      ...userReefNetwork,
     };
     config.networks.testnet_reef = {
       ...defaultReefTestnetConfig(),
-      ...testnetReefNetwork
+      ...testnetReefNetwork,
     };
   }
 );
@@ -51,7 +51,7 @@ extendConfig(
     const userNetworkName = userConfig.defaultNetwork
       ? userConfig.defaultNetwork
       : "reef";
-   
+
     config.defaultNetwork = userNetworkName;
   }
 );

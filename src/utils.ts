@@ -31,23 +31,32 @@ export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
 
 export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
-  url: "wss://rpc-testnet.reefscan.com/ws"
-})
+  url: "wss://rpc-testnet.reefscan.com/ws",
+});
 
-export const ensureExpression = (expression: boolean, message: string): void => {
+export const ensureExpression = (
+  expression: boolean,
+  message: string
+): void => {
   if (!expression) {
     throwError(message);
   }
-}
+};
 
 export const throwError = (message: string) => {
   throw new HardhatPluginError("Hardhat-reef", message);
-}
+};
 
 export const accountsToArrayOfStrings = (accounts: any): string[] => {
-  if (Array.isArray(accounts) && accounts.every(item => typeof item === "string")) {
+  if (
+    Array.isArray(accounts) &&
+    accounts.every((item) => typeof item === "string")
+  ) {
     return accounts as string[];
   } else {
-    throw new HardhatPluginError("Hardhat-reef", "Reef chain allows only account of type: string[]");
+    throw new HardhatPluginError(
+      "Hardhat-reef",
+      "Reef chain allows only account of type: string[]"
+    );
   }
-}
+};

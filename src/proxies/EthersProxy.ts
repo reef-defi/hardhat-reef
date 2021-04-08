@@ -4,6 +4,7 @@ import { Artifact } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
 import { loadContract, throwError } from "../utils";
+
 import { ReefSigner } from "./signers/ReefSigner";
 
 export default class implements ProxyProvider {
@@ -14,11 +15,11 @@ export default class implements ProxyProvider {
   }
 
   public async getSigner(address: string) {
-    return await this.eth.getSigner(address);
+    return this.eth.getSigner(address);
   }
 
-  public async getSigners(){
-    return await this.eth.getSigners();
+  public async getSigners() {
+    return this.eth.getSigners();
   }
 
   public async getSignerByName(name: string) {
@@ -29,30 +30,47 @@ export default class implements ProxyProvider {
     return signers[signerNames[name]];
   }
 
-  public async getContractAt(nameOrAbi: string | any[], address: string, signer?: ReefSigner): Promise<Contract> {
-    return await this.eth.getContractAt(nameOrAbi, address, signer as SignerWithAddress);
+  public async getContractAt(
+    nameOrAbi: string | any[],
+    address: string,
+    signer?: ReefSigner
+  ): Promise<Contract> {
+    return this.eth.getContractAt(
+      nameOrAbi,
+      address,
+      signer as SignerWithAddress
+    );
   }
 
-  public async getContractFactory(contractName: string, args?: any[], signer?: ReefSigner | string) {
+  public async getContractFactory(
+    contractName: string,
+    args?: any[],
+    signer?: ReefSigner | string
+  ) {
     const contract = await loadContract(contractName);
-    const wallet = await this.resolveSigner(signer) as SignerWithAddress;
-    return ContractFactory
-      .fromSolidity(contract)
+    const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
+    return ContractFactory.fromSolidity(contract)
       .connect(wallet)
       .deploy(args ? args : true);
   }
 
-  private async resolveSigner(signer?: ReefSigner | string): Promise<ReefSigner> {
-    if (signer === undefined)
+  private async resolveSigner(
+    signer?: ReefSigner | string
+  ): Promise<ReefSigner> {
+    if (signer === undefined) {
       return (await this.eth.getSigners())[0];
-    if (typeof signer === "string")
+    }
+    if (typeof signer === "string") {
       return this.getSigner(signer);
+    }
     return signer;
   }
 }
 
-const signerNames = ["alice", "bob", "charlie", "dave", "eve", "ferdie"]
-  .reduce((acc, name, index) => {
+const signerNames = ["alice", "bob", "charlie", "dave", "eve", "ferdie"].reduce(
+  (acc, name, index) => {
     acc[name] = index;
     return acc;
-  }, {} as {[name: string]: number});
+  },
+  {} as { [name: string]: number }
+);

@@ -1,26 +1,41 @@
-import { Bytes } from '@ethersproject/bytes';
-import { Deferrable } from '@ethersproject/properties';
+import {
+  BlockTag,
+  TransactionRequest,
+  TransactionResponse,
+} from "@ethersproject/abstract-provider";
 import { BigNumber } from "@ethersproject/bignumber";
-import { BlockTag, TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
+import { Bytes } from "@ethersproject/bytes";
+import { Deferrable } from "@ethersproject/properties";
 
 export declare class ReefSigner {
-  getAddress(): Promise<string>;
-  signTransaction(transaction: Deferrable<TransactionRequest>): Promise<string>;
-  sendTransaction(transaction: Deferrable<TransactionRequest>): Promise<TransactionResponse>;
-  signMessage(message: Bytes | string): Promise<string>;
+  public static isSigner(value: any): value is ReefSigner;
+  public getAddress(): Promise<string>;
+  public signTransaction(
+    transaction: Deferrable<TransactionRequest>
+  ): Promise<string>;
+  public signMessage(message: Bytes | string): Promise<string>;
 
-  getBalance(blockTag?: BlockTag): Promise<BigNumber>;
-  getTransactionCount(blockTag?: BlockTag): Promise<number>;
-  estimateGas(transaction: Deferrable<TransactionRequest>): Promise<BigNumber>;
-  call(transaction: Deferrable<TransactionRequest>, blockTag?: BlockTag): Promise<string>;
-  sendTransaction(transaction: Deferrable<TransactionRequest>): Promise<TransactionResponse>;
-  getChainId(): Promise<number>;
-  getGasPrice(): Promise<BigNumber>;
-  resolveName(name: string): Promise<string>;
-  checkTransaction(transaction: Deferrable<TransactionRequest>): Deferrable<TransactionRequest>;
-  populateTransaction(transaction: Deferrable<TransactionRequest>): Promise<TransactionRequest>;
+  public getBalance(blockTag?: BlockTag): Promise<BigNumber>;
+  public getTransactionCount(blockTag?: BlockTag): Promise<number>;
+  public estimateGas(
+    transaction: Deferrable<TransactionRequest>
+  ): Promise<BigNumber>;
+  public call(
+    transaction: Deferrable<TransactionRequest>,
+    blockTag?: BlockTag
+  ): Promise<string>;
+  public sendTransaction(
+    transaction: Deferrable<TransactionRequest>
+  ): Promise<TransactionResponse>;
+  public getChainId(): Promise<number>;
+  public getGasPrice(): Promise<BigNumber>;
+  public resolveName(name: string): Promise<string>;
+  public checkTransaction(
+    transaction: Deferrable<TransactionRequest>
+  ): Deferrable<TransactionRequest>;
+  public populateTransaction(
+    transaction: Deferrable<TransactionRequest>
+  ): Promise<TransactionRequest>;
 
-  _checkProvider(operation?: string): void;
-  
-  static isSigner(value: any): value is ReefSigner;
+  public _checkProvider(operation?: string): void;
 }
