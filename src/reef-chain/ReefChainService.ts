@@ -11,7 +11,7 @@ const KILL_REEF_NODE_COMMAND =
   "ps -A | grep reef-node | grep -v grep | awk '{print $1}' | xargs kill -9";
 
 export default class ReefChainService {
-  public static async createService() {
+  public static async createService(): Promise<void> {
     await ReefChainService.pullChain();
     return new Promise((resolve, reject) => {
       console.log("Starting Reef-node service!");
@@ -27,7 +27,7 @@ export default class ReefChainService {
       // this must be removed in future!
       // timeout constant is also set to some high enough value to ensure chain
       // is up in running when the Provider is called.
-      setTimeout(() => resolve(1), 3300);
+      setTimeout(() => resolve(), 3300);
     });
   }
 
