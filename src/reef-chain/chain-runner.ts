@@ -1,21 +1,19 @@
-import { HardhatPluginError } from "hardhat/plugins";
-import { HardhatConfig, RunTaskFunction } from "hardhat/types";
+import { HardhatConfig } from "hardhat/types";
 import { URL } from "url";
 
 import { REEF_CHAIN } from "../types";
-import { ensureExpression } from "../utils";
-
 import ReefChainService from "./ReefChainService";
 
 export const startChain = async (chain: string, config: HardhatConfig) => {
   if (chain === REEF_CHAIN) {
     const url = new URL(config.networks.reef.url);
     const free = await isPortFree(url.hostname, Number(url.port));
-    ensureExpression(free, "Port 9944 is already bound!");
-    return ReefChainService.createService();
-  } else {
-    return Promise.resolve();
-  }
+
+    if (free) {
+      return ReefChainService.createService();; 
+    }
+  } 
+  return Promise.resolve();
 };
 
 export const stopChain = async () => {
