@@ -19,7 +19,7 @@ jobs:
       with:
         path: node_modules
         key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-    - name: Build
+    - name: Install dependencies
       if: steps.cache-modules.outputs.cache-hit != 'true'
       run: yarn --immutable
     - name: Test
@@ -37,11 +37,11 @@ jobs:
       with:
         path: node_modules
         key: 14.x-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-    - name: Build
+    - name: Install dependencies
       if: steps.cache-modules.outputs.cache-hit != 'true'
       run: yarn --frozen-lockfile
-    - name: Test
-      run: yarn test
+    - name: Build
+      run: yarn build
 
     - name: Publish
       uses: mikeal/merge-release@master
