@@ -10,14 +10,12 @@ import {
 } from "./types";
 
 export const proxyBuilder = (hre: HardhatRuntimeEnvironment): ProxyProvider => {
-  const network = hre.network;
-
   switch (hre.network.name) {
     case REEF_CHAIN:
-      return new BodhiProxy(network.config as ReefNetworkConfig);
+      return new BodhiProxy(hre);
     case TESTNET_REEF:
-      return new BodhiProxy(network.config as ReefNetworkConfig);
+      return new BodhiProxy(hre);
     default:
-      return new EthersProxy(hre.ethers);
+      return new EthersProxy(hre);
   }
 };
