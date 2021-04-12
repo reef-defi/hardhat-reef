@@ -12,12 +12,11 @@ import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {
   accountsToArrayOfStrings,
   ensureExpression,
+  loadContract,
   throwError,
 } from "../utils";
 
 import { ReefSigner } from "./signers/ReefSigner";
-import { Artifact } from "hardhat/types";
-import { artifacts } from "hardhat";
 
 export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -33,13 +32,12 @@ export class BodhiProxy implements ProxyProvider {
   }
 
   public async getContractAt(
-    nameOrAbi: string | Artifact,
+    nameOrAbi: string | any[],
     address: string,
     signer?: ReefSigner
   ): Promise<Contract> {
-    const artifact = typeof nameOrAbi === "string" 
-      ? await artifacts.readArtifact(nameOrAbi) 
-      : nameOrAbi;
+    const artifact =
+      typeof nameOrAbi === "string" ? await loadContract(nameOrAbi) : nameOrAbi;
 
     return new Contract(address, artifact.abi, signer as Signer);
   }
@@ -50,9 +48,8 @@ export class BodhiProxy implements ProxyProvider {
   ) {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
-    const contract = await artifacts.readArtifact(contractName);
-    return ContractFactory
-      .fromSolidity(contract)
+    const contract = await loadContract(contractName);
+    return ContractFactory.fromSolidity(contract)
       .connect(wallet as Signer);
   }
 

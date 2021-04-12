@@ -3,8 +3,8 @@ import { Contract, ContractFactory } from "ethers";
 import { Artifact } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
-import { throwError } from "../utils";
-import { artifacts } from "hardhat";
+import { loadContract, throwError } from "../utils";
+
 import { ReefSigner } from "./signers/ReefSigner";
 
 export default class implements ProxyProvider {
@@ -31,16 +31,12 @@ export default class implements ProxyProvider {
   }
 
   public async getContractAt(
-    nameOrAbi: string | Artifact,
+    nameOrAbi: string | any[],
     address: string,
     signer?: ReefSigner
   ): Promise<Contract> {
-    const artifact = typeof nameOrAbi === "string" 
-      ? await artifacts.readArtifact(nameOrAbi)
-      : nameOrAbi;
-
     return this.eth.getContractAt(
-      artifact.abi,
+      nameOrAbi,
       address,
       signer as SignerWithAddress
     );
@@ -50,10 +46,10 @@ export default class implements ProxyProvider {
     contractName: string,
     signer?: ReefSigner | string
   ) {
-    const contract = await artifacts.readArtifact(contractName);
+    const contract = await loadContract(contractName);
     const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
     return ContractFactory.fromSolidity(contract)
-      .connect(wallet)
+      .connect(wallet);
   }
 
   private async resolveSigner(

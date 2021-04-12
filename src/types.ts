@@ -10,7 +10,7 @@ export const TESTNET_REEF = "testnet_reef";
 
 export interface ProxyProvider {
   getContractAt: (
-    nameOrAbi: string | Artifact,
+    nameOrAbi: string | any[],
     address: string,
     signer?: ReefSigner
   ) => Promise<Contract>;
