@@ -43,7 +43,7 @@ export class BodhiProxy implements ProxyProvider {
 
     if (typeof nameOrAbi === "string") {
       const art = await this.hre.artifacts.readArtifact(nameOrAbi);
-      artifact = await art.abi;
+      artifact = art.abi;
     } else {
       artifact = nameOrAbi;
     }

@@ -5,7 +5,6 @@ import EthersProxy from "./proxies/EthersProxy";
 import {
   ProxyProvider,
   REEF_CHAIN,
-  ReefNetworkConfig,
   TESTNET_REEF,
 } from "./types";
 
