@@ -49,25 +49,28 @@ const signer = await hre.reef.getSignerByName("alice");
 
 Creating contract factory.
 ```javascript
-const flipper = await hre.reef.getContractFactory("Flipper");
+const Flipper = await hre.reef.getContractFactory("Flipper");
 ```
 
 Creating contract factory with arguments.
 ```javascript
-const flipper = await hre.reef.getContractFactory("Flipper", [true]);
+const Flipper = await hre.reef.getContractFactory("Flipper");
+const flipper = await Flipper.deploy(false);
 ```
 
 Creating contract factory with explicit signer.
 ```javascript
 const alice = await hre.reef.getSignerByName("alice");
-const flipper = await hre.reef.getContractFactory("Flipper", [], alice);
+const Flipper = await hre.reef.getContractFactory("Flipper", alice);
+const flipper = await Flipper.deploy(true);
 ```
 
 Finding flipper contract through his address.
 ```javascript
-const flipper = await hre.reef.getContractFactory("Flipper", [], alice);
+const Flipper = await hre.reef.getContractFactory("Flipper", alice);
+const flipper = await Flipper.deploy(false);
 const address = await flipper.address;
-const contract = await hre.reef.getContractAt("Flipper", address);
+const contract = await hre.reef.getContractAt(Flipper, address);
 ```
 
 

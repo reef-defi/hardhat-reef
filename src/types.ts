@@ -1,5 +1,5 @@
 import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
-import { Contract } from "ethers";
+import { Contract, ContractFactory } from "ethers";
 import type { ethers } from "ethers";
 import { HttpNetworkConfig } from "hardhat/types";
 
@@ -16,9 +16,8 @@ export interface ProxyProvider {
   ) => Promise<Contract>;
   getContractFactory: (
     contract: string,
-    args?: any[],
     signer?: ReefSigner | string
-  ) => Promise<Contract>;
+  ) => Promise<ContractFactory>;
 
   getSigner(address: string): Promise<ReefSigner>;
   getSigners(): Promise<ReefSigner[]>;

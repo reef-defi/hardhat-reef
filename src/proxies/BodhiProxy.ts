@@ -7,12 +7,13 @@ import {
   TestAccountSigningKey,
 } from "@reef-defi/evm-provider";
 import { Contract, ContractFactory } from "ethers";
+import { artifacts } from "hardhat";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {
   accountsToArrayOfStrings,
   ensureExpression,
-  loadContract,
   throwError,
 } from "../utils";
 
@@ -22,11 +23,14 @@ export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
   private static wallets: { [name: string]: ReefSigner } = {};
 
+  private hre: HardhatRuntimeEnvironment;
   private providerUrl: string;
   private seeds: string[];
 
-  constructor(config: ReefNetworkConfig) {
+  constructor(hre: HardhatRuntimeEnvironment) {
+    const config = hre.network.config as ReefNetworkConfig;
     console.log(`Listening on: ${config.url}`);
+    this.hre = hre;
     this.providerUrl = config.url;
     this.seeds = accountsToArrayOfStrings(config.accounts);
   }
@@ -36,24 +40,26 @@ export class BodhiProxy implements ProxyProvider {
     address: string,
     signer?: ReefSigner
   ): Promise<Contract> {
-    const artifact =
-      typeof nameOrAbi === "string" ? await loadContract(nameOrAbi) : nameOrAbi;
+    let artifact: any[];
 
-    return new Contract(address, artifact.abi, signer as Signer);
+    if (typeof nameOrAbi === "string") {
+      const art = await this.hre.artifacts.readArtifact(nameOrAbi);
+      artifact = await art.abi;
+    } else {
+      artifact = nameOrAbi;
+    }
+
+    return new Contract(address, artifact, signer as Signer);
   }
 
   public async getContractFactory(
     contractName: string,
-    args?: any[],
     signer?: ReefSigner | string
   ) {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
-    const contract = await loadContract(contractName);
-    const contractArguments = args ? args : [];
-    return ContractFactory.fromSolidity(contract)
-      .connect(wallet as Signer)
-      .deploy(...contractArguments);
+    const contract = await artifacts.readArtifact(contractName);
+    return ContractFactory.fromSolidity(contract).connect(wallet as Signer);
   }
 
   public async getSigners() {

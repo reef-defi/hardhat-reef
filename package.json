@@ -51,6 +51,7 @@
     "@reef-defi/evm-provider": "^0.1.0",
     "@types/validator": "^13.1.3",
     "ethers": "5.0.21",
+    "fs-extra": "^9.1.0",
     "node-fetch": "^2.6.1",
     "portscanner": "^2.2.0"
   }
