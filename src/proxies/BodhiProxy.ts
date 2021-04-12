@@ -7,7 +7,6 @@ import {
   TestAccountSigningKey,
 } from "@reef-defi/evm-provider";
 import { Contract, ContractFactory } from "ethers";
-import { artifacts } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
@@ -58,7 +57,7 @@ export class BodhiProxy implements ProxyProvider {
   ) {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
-    const contract = await artifacts.readArtifact(contractName);
+    const contract = await this.hre.artifacts.readArtifact(contractName);
     return ContractFactory.fromSolidity(contract).connect(wallet as Signer);
   }
 
