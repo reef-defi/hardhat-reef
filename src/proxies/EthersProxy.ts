@@ -1,10 +1,9 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract, ContractFactory } from "ethers";
-import { artifacts } from "hardhat";
-import { Artifact, HardhatRuntimeEnvironment } from "hardhat/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
-import { loadContract, throwError } from "../utils";
+import { throwError } from "../utils";
 
 import { ReefSigner } from "./signers/ReefSigner";
 
@@ -51,8 +50,7 @@ export default class implements ProxyProvider {
   ) {
     const contract = await this.hre.artifacts.readArtifact(contractName);
     const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
-    return ContractFactory.fromSolidity(contract)
-      .connect(wallet);
+    return ContractFactory.fromSolidity(contract).connect(wallet);
   }
 
   private async resolveSigner(

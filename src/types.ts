@@ -1,7 +1,7 @@
 import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
 import { Contract, ContractFactory } from "ethers";
 import type { ethers } from "ethers";
-import { Artifact, HttpNetworkConfig } from "hardhat/types";
+import { HttpNetworkConfig } from "hardhat/types";
 
 import { ReefSigner } from "./proxies/signers/ReefSigner";
 

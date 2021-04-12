@@ -12,12 +12,6 @@ export const ensureFilePath = async (filePath: string) => {
   }
 };
 
-export const loadContract = async (contractName: string): Promise<any> => {
-  const contractFile = `${process.cwd()}/artifacts/contracts/${contractName}.sol/${contractName}.json`;
-  await ensureFilePath(contractFile);
-  return require(contractFile);
-};
-
 export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
   url: "ws://127.0.0.1:9944",
   path: undefined,

@@ -2,6 +2,7 @@ import { HardhatConfig } from "hardhat/types";
 import { URL } from "url";
 
 import { REEF_CHAIN } from "../types";
+
 import ReefChainService from "./ReefChainService";
 
 export const startChain = async (chain: string, config: HardhatConfig) => {
@@ -10,9 +11,9 @@ export const startChain = async (chain: string, config: HardhatConfig) => {
     const free = await isPortFree(url.hostname, Number(url.port));
 
     if (free) {
-      return ReefChainService.createService();; 
+      return ReefChainService.createService();
     }
-  } 
+  }
   return Promise.resolve();
 };
 
