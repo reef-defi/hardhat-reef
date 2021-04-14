@@ -1,5 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { Provider } from "@reef-defi/evm-provider";
 import { Contract, ContractFactory } from "ethers";
+import { HardhatPluginError } from "hardhat/plugins";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
@@ -48,9 +50,14 @@ export default class implements ProxyProvider {
     contractName: string,
     signer?: ReefSigner | string
   ) {
+    this.eth.provider
     const contract = await this.hre.artifacts.readArtifact(contractName);
     const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
     return ContractFactory.fromSolidity(contract).connect(wallet);
+  }
+
+  public async getProvider(): Promise<Provider> {
+    throw new HardhatPluginError("Hardhat-reef", "Get provider in Ethers network is not supported...");
   }
 
   private async resolveSigner(

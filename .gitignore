@@ -1,6 +1,6 @@
 /dist
-/test/fixture-projects/hardhat-project/artifacts/*
-/test/fixture-projects/hardhat-project/cache/*
+test/fixture-projects/hardhat-project/artifacts/*
+test/fixture-projects/hardhat-project/cache/*
 
 # Logs
 logs

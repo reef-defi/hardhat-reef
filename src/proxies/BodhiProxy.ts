@@ -43,7 +43,7 @@ export class BodhiProxy implements ProxyProvider {
 
     if (typeof nameOrAbi === "string") {
       const art = await this.hre.artifacts.readArtifact(nameOrAbi);
-      artifact = await art.abi;
+      artifact = art.abi;
     } else {
       artifact = nameOrAbi;
     }
@@ -64,6 +64,11 @@ export class BodhiProxy implements ProxyProvider {
   public async getSigners() {
     await this.ensureSetup();
     return this.getWallets();
+  }
+
+  public async getProvider() {
+    await this.ensureProvider();
+    return BodhiProxy.provider!;
   }
 
   public async getSigner(address: string) {
