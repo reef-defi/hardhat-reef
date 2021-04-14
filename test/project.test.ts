@@ -41,6 +41,16 @@ describe("Unit testing", function() {
       const alice = await this.hre.reef.getSignerByName("alice");
       assert.notEqual(alice, undefined, "Alice does not exist!");
     });
+    it("Ensure default signers", async function () {
+      Promise.resolve()
+        .then(() => {
+          const promisses = ["alice", "bob", "charlie", "dave", "eve", "ferdie"]
+          .forEach(async (signerName) => {
+            const signer = await this.hre.reef.getSignerByName(signerName);
+            assert.notEqual(signer, undefined, `Signer name: ${signerName} does not exist!`);
+          });
+      })
+    });
   });
 
   describe("Get contract factory testing", function () {
