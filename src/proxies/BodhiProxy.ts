@@ -66,6 +66,11 @@ export class BodhiProxy implements ProxyProvider {
     return this.getWallets();
   }
 
+  public async getProvider() {
+    await this.ensureProvider();
+    return BodhiProxy.provider!;
+  }
+
   public async getSigner(address: string) {
     await this.ensureSetup();
     const wallets = await this.getWallets();
