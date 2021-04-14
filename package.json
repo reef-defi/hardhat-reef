@@ -46,8 +46,6 @@
     "hardhat": "^2.0.0"
   },
   "dependencies": {
-    "@acala-network/contracts": "^1.0.3",
-    "@polkadot/api": "^4.2.1",
     "@reef-defi/evm-provider": "^0.1.0",
     "@types/validator": "^13.1.3",
     "ethers": "5.0.21",
