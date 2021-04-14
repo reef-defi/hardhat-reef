@@ -3417,7 +3417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reef-defi/evm-provider@npm:^0.1.1":
+"@reef-defi/evm-provider@npm:^0.1.0":
   version: 0.1.1
   resolution: "@reef-defi/evm-provider@npm:0.1.1"
   dependencies:
@@ -3440,7 +3440,7 @@ __metadata:
     "@acala-network/contracts": ^1.0.3
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@polkadot/api": ^4.2.1
-    "@reef-defi/evm-provider": ^0.1.1
+    "@reef-defi/evm-provider": ^0.1.0
     "@types/chai": ^4.1.7
     "@types/fs-extra": ^5.0.4
     "@types/mocha": ^5.2.6
