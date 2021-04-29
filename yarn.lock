@@ -5,13 +5,6 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@acala-network/contracts@npm:^1.0.3":
-  version: 1.0.12
-  resolution: "@acala-network/contracts@npm:1.0.12"
-  checksum: 901f040bd480da3135c4f18c5fe0c391659c939df3e653bccd5c1f365cea282cca902f71033b1830f777f8bfcd79de50fd7b2879981c87c6bb29651ca9de5238
-  languageName: node
-  linkType: hard
-
 "@babel/cli@npm:^7.12.1":
   version: 7.13.10
   resolution: "@babel/cli@npm:7.13.10"
@@ -3380,7 +3373,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@reef-defi/hardhat-reef@workspace:."
   dependencies:
-    "@acala-network/contracts": ^1.0.3
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@polkadot/api": 4.5.1
     "@polkadot/types": 4.5.1
