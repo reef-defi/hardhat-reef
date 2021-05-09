@@ -32,15 +32,10 @@ extendConfig(
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
     const userReefNetwork = userConfig.networks?.reef;
-    const testnetReefNetwork = userConfig.networks?.testnet_reef;
 
     config.networks.reef = {
       ...defaultReefNetworkConfig(),
       ...userReefNetwork,
-    };
-    config.networks.testnet_reef = {
-      ...defaultReefTestnetConfig(),
-      ...testnetReefNetwork,
     };
   }
 );
