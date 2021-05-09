@@ -11,7 +11,6 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import {
-  accountsToArrayOfStrings,
   ensureExpression,
   throwError,
 } from "../utils";
@@ -31,7 +30,7 @@ export class BodhiProxy implements ProxyProvider {
     console.log(`Listening on: ${config.url}`);
     this.hre = hre;
     this.providerUrl = config.url;
-    this.seeds = accountsToArrayOfStrings(config.accounts);
+    this.seeds = config.seeds ? config.seeds : [];
   }
 
   public async getContractAt(

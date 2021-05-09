@@ -15,6 +15,7 @@ export const ensureFilePath = async (filePath: string) => {
 export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
   url: "ws://127.0.0.1:9944",
   path: undefined,
+  seeds: [],
   accounts: [],
   gas: -1,
   gasMultiplier: -1,

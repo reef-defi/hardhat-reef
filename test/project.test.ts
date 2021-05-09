@@ -4,7 +4,6 @@ import { ContractFactory } from "ethers";
 
 import EthersProxy from "../src/proxies/EthersProxy";
 import { useEnvironment } from "./helpers";
-import { ReefSigner } from "./proxies/signers/ReefSigner";
 
 describe("Integration tests examples", function () {
   describe("Hardhat Runtime Environment extension", function () {
