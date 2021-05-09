@@ -29,6 +29,7 @@ export interface ProxyProvider {
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
   path?: string;
+  seeds?: string[];
 }
 
 export type HardhatEthers = typeof ethers & HardhatEthersHelpers;
