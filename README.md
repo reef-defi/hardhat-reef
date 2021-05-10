@@ -8,6 +8,44 @@ Hardhat reef plugin allows to deploy and interact with contracts through hardhat
 yarn add @reef-defi/hardhat-reef 
 ```
 
+## Configuration
+
+Reef network can be configured in `hardhat.config.js` file. 
+
+Here is an example of a configuration for both localhost reef-node and reef-testnet.
+To access your account insert account mnemonic in `<INSERT ACCOUNT MNEMONIC SEED>` field and then access it through `await hre.reef.getSignerByName("Account1");`.
+
+```javascript
+module.exports = {
+  solidity: "0.8.0",
+  networks: {
+    // Localhost reef network configuration
+    reef: {
+      url: "ws://127.0.0.1:9944",
+      seeds: {
+        "Account1": "<INSERT ACCOUNT MNEMONIC SEED>",
+      }
+    },
+    // Testnet reef network configuration
+    reef_testnet: {
+      url: "wss://rpc-testnet.reefscan.com/ws",
+      seeds: {
+        "Account1": "<INSERT ACCOUNT MNEMONIC SEED>",
+      }
+    },
+  },
+};
+```
+
+Each network configuration accepts 
+- `url`: used to connect to the desired network.
+- `seeds`: used to injecting a real account in the script. The default value is set to `{}`.
+
+Default values for both networks are set with the URL shown in the example.
+This way system works straight out of the box without the need for configuration.
+Therefore configuration is only required if the user wants to change the URL of a network or if he wants to inject his accounts.
+
+
 ## Usage
 
 The plugin exposes `hre.reef` object for interaction with the bodhi compatible chain.
@@ -37,13 +75,17 @@ const previousSigner = await hre.reef.getSigner(address);
 console.log(address === await previousSigner.getAddress());
 ```
 
-Get signer by name.  
-Accessing the accounts set in hardhat config by `acc-{index}`, where index is the number pointing to desired account in array. Starting with 1.   
-Example: `acc-1` to access the first account.  
-Available test signers: `[alice, bob, charlie, dave, eve, ferdie]`.
+Get signer by name.
+Available localhost test signers: `[alice, bob, charlie, dave, eve, ferdie]`.
 ```javascript
 const signer = await hre.reef.getSignerByName("alice");
 ```
+
+Access injected account from configuration.
+```javascript
+const signer = await hre.reef.gerSignerByName("Account name used in config file");
+```
+
 
 ### Contracts
 
