@@ -8,7 +8,7 @@ import "./built-in/run";
 import { proxyBuilder } from "./proxy-builder";
 // import "./built-in/test";
 import "./type-extensions";
-import { defaultReefNetworkConfig, defaultReefTestnetConfig } from "./utils";
+import { defaultReefMainnetConfig, defaultReefNetworkConfig, defaultReefTestnetConfig } from "./utils";
 
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
@@ -31,12 +31,21 @@ extendConfig(
 // Configure Reef Network Parameters
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
-    const userReefNetwork = userConfig.networks?.reef;
-
+    // Reef localhost network config
     config.networks.reef = {
       ...defaultReefNetworkConfig(),
-      ...userReefNetwork,
+      ...userConfig.networks?.reef,
     };
+    // Reef testnet config
+    config.networks.reef_testnet = {
+      ...defaultReefTestnetConfig(),
+      ...userConfig.networks?.reef_testnet,
+    };
+    // Reef mainnet config
+    config.networks.reef_mainnet = {
+      ...defaultReefMainnetConfig(),
+      ...userConfig.networks?.reef_mainnet,
+    }
   }
 );
 

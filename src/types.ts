@@ -7,7 +7,7 @@ import { ReefSigner } from "./proxies/signers/ReefSigner";
 import { Provider } from "@reef-defi/evm-provider";
 
 export const REEF_CHAIN = "reef";
-export const TESTNET_REEF = "testnet_reef";
+export const TESTNET_REEF = "reef_testnet";
 
 export interface ProxyProvider {
   getContractAt: (
@@ -29,7 +29,7 @@ export interface ProxyProvider {
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
   path?: string;
-  seeds?: string[];
+  seeds?: { [key: string]: string };
 }
 
 export type HardhatEthers = typeof ethers & HardhatEthersHelpers;

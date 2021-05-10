@@ -23,14 +23,14 @@ export class BodhiProxy implements ProxyProvider {
 
   private hre: HardhatRuntimeEnvironment;
   private providerUrl: string;
-  private seeds: string[];
+  private seeds: {[key: string]: string};
 
   constructor(hre: HardhatRuntimeEnvironment) {
     const config = hre.network.config as ReefNetworkConfig;
     console.log(`Listening on: ${config.url}`);
     this.hre = hre;
     this.providerUrl = config.url;
-    this.seeds = config.seeds ? config.seeds : [];
+    this.seeds = config.seeds ? config.seeds : {};
   }
 
   public async getContractAt(
@@ -135,18 +135,19 @@ export class BodhiProxy implements ProxyProvider {
       );
       signingKeys.addKeyringPair(Object.values(testPairs));
 
-      const seedPairs = this.seeds.map((seed) => createSeedKeyringPair(seed));
+      const seedPairs = Object.keys(this.seeds)
+        .map((key) => ({
+          name: key,
+          pair: createSeedKeyringPair(this.seeds[key])
+        }));
 
-      signingKeys.addKeyringPair(seedPairs);
+      signingKeys.addKeyringPair(seedPairs.map(({pair}) => pair));
 
-      const seedSigners = seedPairs.map(
-        (pair) => new Signer(BodhiProxy.provider!, pair.address, signingKeys)
-      );
-
-      const seedSignerByName = seedSigners.reduce((acc, signer, index) => {
-        acc[`Acc-${index + 1}`] = signer;
-        return acc;
-      }, {} as { [name: string]: ReefSigner });
+      const seedSigners = seedPairs
+        .reduce((acc, {name, pair}) => {
+          acc[name] = new Signer(BodhiProxy.provider!, pair.address, signingKeys);
+          return acc;
+        }, {} as { [name: string]: ReefSigner });
 
       const testSignersByName = [
         "alice",
@@ -164,7 +165,7 @@ export class BodhiProxy implements ProxyProvider {
         return acc;
       }, {} as { [name: string]: ReefSigner });
 
-      BodhiProxy.wallets = { ...seedSignerByName, ...testSignersByName };
+      BodhiProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
 }

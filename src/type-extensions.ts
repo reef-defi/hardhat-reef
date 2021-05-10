@@ -18,9 +18,13 @@ declare module "hardhat/types/config" {
 declare module "hardhat/types/config" {
   export interface NetworksUserConfig {
     reef?: ReefNetworkConfig;
+    reef_testnet?: ReefNetworkConfig;
+    reef_mainnet?: ReefNetworkConfig;
   }
   export interface NetworksConfig {
     reef: ReefNetworkConfig;
+    reef_testnet: ReefNetworkConfig;
+    reef_mainnet: ReefNetworkConfig;
   }
 }
 
