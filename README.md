@@ -12,8 +12,8 @@ yarn add @reef-defi/hardhat-reef
 
 Reef network can be configured in `hardhat.config.js` file. 
 
-Here is an example of a configuration for both localhost reef-node and reef-testnet.
-To access your account insert account mnemonic in `<INSERT ACCOUNT MNEMONIC SEED>` field and then access it through `await hre.reef.getSignerByName("Account1");`.
+Here is an example of a configuration for both localhost `reef-node` and `reef-testnet`.
+To inject your account insert account mnemonic in `<INSERT ACCOUNT MNEMONIC SEED>` field and then access it through `await hre.reef.getSignerByName("Account1");`.
 
 ```javascript
 module.exports = {
@@ -41,7 +41,7 @@ Each network configuration accepts
 - `url`: used to connect to the desired network.
 - `seeds`: used to injecting a real account in the script. The default value is set to `{}`.
 
-Default values for both networks are set with the URL shown in the example.
+Default values for both networks are set with the URLs shown in the example.
 This way system works straight out of the box without the need for configuration.
 Therefore configuration is only required if the user wants to change the URL of a network or if he wants to inject his accounts.
 
