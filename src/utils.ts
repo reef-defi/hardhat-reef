@@ -15,7 +15,7 @@ export const ensureFilePath = async (filePath: string) => {
 export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
   url: "ws://127.0.0.1:9944",
   path: undefined,
-  seeds: [],
+  seeds: {},
   accounts: [],
   gas: -1,
   gasMultiplier: -1,
@@ -29,6 +29,11 @@ export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
   url: "wss://rpc-testnet.reefscan.com/ws",
 });
 
+export const defaultReefMainnetConfig = (): ReefNetworkConfig => ({
+  ...defaultReefNetworkConfig(),
+  url: "", // TODO when the mainnet is published enter its url
+})
+
 export const ensureExpression = (
   expression: boolean,
   message: string
@@ -40,18 +45,4 @@ export const ensureExpression = (
 
 export const throwError = (message: string) => {
   throw new HardhatPluginError("Hardhat-reef", message);
-};
-
-export const accountsToArrayOfStrings = (accounts: any): string[] => {
-  if (
-    Array.isArray(accounts) &&
-    accounts.every((item) => typeof item === "string")
-  ) {
-    return accounts as string[];
-  } else {
-    throw new HardhatPluginError(
-      "Hardhat-reef",
-      "Reef chain allows only account of type: string[]"
-    );
-  }
 };
