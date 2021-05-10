@@ -23,14 +23,14 @@ module.exports = {
     reef: {
       url: "ws://127.0.0.1:9944",
       seeds: {
-        "Account1": "<INSERT ACCOUNT MNEMONIC SEED>",
+        "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
     },
     // Testnet reef network configuration
     reef_testnet: {
       url: "wss://rpc-testnet.reefscan.com/ws",
       seeds: {
-        "Account1": "<INSERT ACCOUNT MNEMONIC SEED>",
+        "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
     },
   },
@@ -115,6 +115,148 @@ const address = await flipper.address;
 const contract = await hre.reef.getContractAt(Flipper, address);
 ```
 
+
+## Test, Deploy & Interaction with contract example
+
+In this example we will show how to create a new project, test, deploy and interact with the contract.
+We will use [Hardhat Reef Template](https://github.com/reef-defi/hardhat-reef-template). 
+The template provides us with a Greeter contract, some scripts, all necessary dependencies, and hardhat configurations for the Reef node.
+
+
+
+### Creating new project
+
+There are two simple ways to start new project. 
+
+1. Clone [Hardhat Reef Template](https://github.com/reef-defi/hardhat-reef-template).
+```bash
+git clone git@github.com:reef-defi/hardhat-reef-template.git greeter
+cd greeter
+yarn
+```
+
+2. Use [Hardhat Reef Template](https://github.com/reef-defi/hardhat-reef-template) to configure new project on Github and then clone it.
+```bash
+git clone git@github.com:/username/greeter.git
+cd greeter
+yarn
+```
+
+
+### Configure project
+First, we need to configure our account from the Reef testnet.
+Injected account will be used to deploy the contract on the chain. 
+This can easily be done in `hardhat.config.js` file by replacing `<INSERT ACCOUNT MNEMONIC SEED>` with account mnemonic seed.
+
+**Make sure account hold suffitient amount of reef tokens!**
+
+If you are going to use the localhost chain, run it by hand and transfer some funds from `alice` test account.
+
+```javascript
+module.exports = {
+  solidity: "0.8.0",
+  networks: {
+    reef: {
+      url: "ws://127.0.0.1:9944",
+      seeds: {
+        "MyAccount": "<INSERT ACCOUNT MNEMONIC SEED>"
+      }
+    },
+    reef_testnet: {
+      url: "wss://rpc-testnet.reefscan.com/ws",
+      seeds: {
+        "MyAccount": "<INSERT ACCOUNT MNEMONIC SEED>"
+      }
+    },
+  },
+};
+```
+
+### Contract
+All the contracts must be written under `contracts/` folder.
+
+### Testing contract
+
+Contract truffle tests are located under `test/` folder. 
+All the tests will be run on hardhat network!
+
+Running tests: `yarn hardhat test`
+
+### Deploy contract
+
+To deploy a contract we need to write a script `scripts/deploy.js`. The script will read the Greeter contract and deploy it with an injected account.
+
+```javascript
+const hre = require("hardhat");
+
+async function main() {
+  // accessing injected account
+  const signer = await hre.reef.getSignerByName("MyAccount");
+  // retreaving Greeter contract factory with injected account 
+  const Greeter = await hre.reef.getContractFactory("Greeter", signer);
+  // deploying the contract with inital "Hello world"
+  const greeter = await Greeter.deploy("Hello world");
+  // waiting for the contract to be deployed
+  await greeter.deployed();
+  
+  // Make sure to print out the contract address and save it!
+  console.log(`Greeter contract address: ${greeter.address}`);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
+**Save the contract address after the script is finished!**
+
+Run deployment script on the Local reef network: `yarn hardhat run script/deploy.js`.
+
+Run deployment script on the Reef test network: `yarn hardhat run script/deploy.js --network reef_testnet`.
+
+Run deployment script on the Hardhat network: `yarn hardhat run script/deploy.js --network hardhat`.
+
+### Contract interaction
+
+We will create a new script `scirpts/interact.js` to interact with the Greeter contract.
+The script will retrieve the Greeter contract from the chain, read its current greeting value, change the greeting text, and read it again.
+
+```javascript
+const hre = require("hardhat");
+
+async function main() {
+  // copy the Greeter contract address from deployment script
+  const contractAddress = "INSERT CONTRACT ADDRESS";
+  // accessing injected account
+  const signer = await hre.reef.getSignerByName("MyAccount");
+  // retrieve Greeter contract from chain
+  const greeter = await hre.reef.getContractAt("Greeter", contractAddress, signer);
+
+  // now we can access existing contract values
+  console.log("Current greeter text: ", await greeter.greet());
+  // modify it
+  await greeter.setGreeting("Greetings!");
+  // and view it again
+  console.log("New greeter text: ", await greeter.greet());
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
+Run interaction script for the Local reet network: `yarn hardhat run script/interact.js`.
+
+Run interaction script for the Reef test network: `yarn hardhat run script/interact.js --network reef_testnet`.
+
+
+# Developement
 
 ## Testing
 
