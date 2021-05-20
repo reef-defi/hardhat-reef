@@ -32,7 +32,7 @@ export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
 export const defaultReefMainnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "", // TODO when the mainnet is published enter its url
-})
+});
 
 export const ensureExpression = (
   expression: boolean,

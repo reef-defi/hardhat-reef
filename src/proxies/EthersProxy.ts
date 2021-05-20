@@ -50,14 +50,17 @@ export default class implements ProxyProvider {
     contractName: string,
     signer?: ReefSigner | string
   ) {
-    this.eth.provider
+    this.eth.provider;
     const contract = await this.hre.artifacts.readArtifact(contractName);
     const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
     return ContractFactory.fromSolidity(contract).connect(wallet);
   }
 
   public async getProvider(): Promise<Provider> {
-    throw new HardhatPluginError("Hardhat-reef", "Get provider in Ethers network is not supported...");
+    throw new HardhatPluginError(
+      "Hardhat-reef",
+      "Get provider in Ethers network is not supported..."
+    );
   }
 
   private async resolveSigner(

@@ -1,10 +1,10 @@
 import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
+import { Provider } from "@reef-defi/evm-provider";
 import { Contract, ContractFactory } from "ethers";
 import type { ethers } from "ethers";
 import { HttpNetworkConfig } from "hardhat/types";
 
 import { ReefSigner } from "./proxies/signers/ReefSigner";
-import { Provider } from "@reef-defi/evm-provider";
 
 export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "reef_testnet";
