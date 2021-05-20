@@ -3,6 +3,7 @@ import { assert, expect } from "chai";
 import { ContractFactory } from "ethers";
 
 import EthersProxy from "../src/proxies/EthersProxy";
+
 import { useEnvironment } from "./helpers";
 
 describe("Integration tests examples", function () {
@@ -19,7 +20,7 @@ describe("Integration tests examples", function () {
   });
 });
 
-describe("Unit testing", function() {
+describe("Unit testing", function () {
   describe("Signers", function () {
     useEnvironment("hardhat-project");
 
@@ -41,21 +42,30 @@ describe("Unit testing", function() {
       assert.notEqual(alice, undefined, "Alice does not exist!");
     });
     it("Ensure default signers", async function () {
-      Promise.resolve()
-        .then(() => {
-          const promisses = ["alice", "bob", "charlie", "dave", "eve", "ferdie"]
-          .forEach(async (signerName) => {
-            const signer = await this.hre.reef.getSignerByName(signerName);
-            assert.notEqual(signer, undefined, `Signer name: ${signerName} does not exist!`);
-          });
-      })
+      Promise.resolve().then(() => {
+        const promisses = [
+          "alice",
+          "bob",
+          "charlie",
+          "dave",
+          "eve",
+          "ferdie",
+        ].forEach(async (signerName) => {
+          const signer = await this.hre.reef.getSignerByName(signerName);
+          assert.notEqual(
+            signer,
+            undefined,
+            `Signer name: ${signerName} does not exist!`
+          );
+        });
+      });
     });
   });
 
   describe("Get contract factory testing", function () {
     useEnvironment("hardhat-project");
 
-    beforeEach(async function() {
+    beforeEach(async function () {
       await this.hre.run("compile", { quiet: true });
     });
 
@@ -79,7 +89,7 @@ describe("Unit testing", function() {
       const alice = await this.hre.reef.getSignerByName("alice");
       const Flipper = await this.hre.reef.getContractFactory("Flipper", alice);
       const flipper = await Flipper.deploy(true);
-      
+
       const aliceAddress = await alice.getAddress();
       const signer = await flipper.signer.getAddress();
       assert.equal(signer, aliceAddress);
@@ -87,18 +97,21 @@ describe("Unit testing", function() {
     it("Deploy contract with signers address", async function () {
       const bob = await this.hre.reef.getSignerByName("bob");
       const bobAddress = await bob.getAddress();
-      const Flipper = await this.hre.reef.getContractFactory("Flipper", bobAddress);
+      const Flipper = await this.hre.reef.getContractFactory(
+        "Flipper",
+        bobAddress
+      );
       const flipper = await Flipper.deploy(true);
 
       assert.equal(await flipper.signer.getAddress(), bobAddress);
     });
     it("Signer is not owner of the Flipper contract", async function () {
       const [s1, s2] = await this.hre.reef.getSigners();
-  
+
       const Flipper = await this.hre.reef.getContractFactory("Flipper", s1);
       const flipper = await Flipper.deploy(true);
       const flipperSignersAddress = await flipper.signer.getAddress();
-  
+
       assert.notEqual(flipperSignersAddress, await s2.getAddress());
     });
   });
@@ -106,35 +119,46 @@ describe("Unit testing", function() {
   describe("Get contract at testing", function () {
     useEnvironment("hardhat-project");
 
-    beforeEach(async function() {
+    beforeEach(async function () {
       await this.hre.run("compile", { quiet: true });
     });
-  
 
     it("Find flipper contract", async function () {
       const Flipper = await this.hre.reef.getContractFactory("Flipper");
       const flipper = await Flipper.deploy(true);
-      
-      const foundFlipper = await this.hre.reef.getContractAt("Flipper", flipper.address);
+
+      const foundFlipper = await this.hre.reef.getContractAt(
+        "Flipper",
+        flipper.address
+      );
       assert.equal(foundFlipper.address, flipper.address);
     });
     it("Flind Flipper contract with abi", async function () {
       const Flipper = await this.hre.reef.getContractFactory("Flipper");
       const flipper = await Flipper.deploy(true);
-      
+
       const flipperAbi = await this.hre.artifacts.readArtifact("Flipper");
-      const foundFlipper = await this.hre.reef.getContractAt(flipperAbi.abi, flipper.address);
+      const foundFlipper = await this.hre.reef.getContractAt(
+        flipperAbi.abi,
+        flipper.address
+      );
       assert.equal(foundFlipper.address, flipper.address);
     });
     it("Get contract with signer", async function () {
       const dave = await this.hre.reef.getSignerByName("dave");
       const daveAddress = await dave.getAddress();
-      const Flipper = await this.hre.reef.getContractFactory("Flipper", daveAddress);
+      const Flipper = await this.hre.reef.getContractFactory(
+        "Flipper",
+        daveAddress
+      );
       const flipper = await Flipper.deploy(true);
 
-      const foundFlipper = await this.hre.reef.getContractAt("Flipper", flipper.address, dave);
+      const foundFlipper = await this.hre.reef.getContractAt(
+        "Flipper",
+        flipper.address,
+        dave
+      );
       assert.equal(foundFlipper.address, flipper.address);
-    })
-  })
-})
-
+    });
+  });
+});

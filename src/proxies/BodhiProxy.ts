@@ -10,10 +10,7 @@ import { Contract, ContractFactory } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
-import {
-  ensureExpression,
-  throwError,
-} from "../utils";
+import { ensureExpression, throwError } from "../utils";
 
 import { ReefSigner } from "./signers/ReefSigner";
 
@@ -23,7 +20,7 @@ export class BodhiProxy implements ProxyProvider {
 
   private hre: HardhatRuntimeEnvironment;
   private providerUrl: string;
-  private seeds: {[key: string]: string};
+  private seeds: { [key: string]: string };
 
   constructor(hre: HardhatRuntimeEnvironment) {
     const config = hre.network.config as ReefNetworkConfig;
@@ -135,19 +132,17 @@ export class BodhiProxy implements ProxyProvider {
       );
       signingKeys.addKeyringPair(Object.values(testPairs));
 
-      const seedPairs = Object.keys(this.seeds)
-        .map((key) => ({
-          name: key,
-          pair: createSeedKeyringPair(this.seeds[key])
-        }));
+      const seedPairs = Object.keys(this.seeds).map((key) => ({
+        name: key,
+        pair: createSeedKeyringPair(this.seeds[key]),
+      }));
 
-      signingKeys.addKeyringPair(seedPairs.map(({pair}) => pair));
+      signingKeys.addKeyringPair(seedPairs.map(({ pair }) => pair));
 
-      const seedSigners = seedPairs
-        .reduce((acc, {name, pair}) => {
-          acc[name] = new Signer(BodhiProxy.provider!, pair.address, signingKeys);
-          return acc;
-        }, {} as { [name: string]: ReefSigner });
+      const seedSigners = seedPairs.reduce((acc, { name, pair }) => {
+        acc[name] = new Signer(BodhiProxy.provider!, pair.address, signingKeys);
+        return acc;
+      }, {} as { [name: string]: ReefSigner });
 
       const testSignersByName = [
         "alice",
@@ -163,7 +158,12 @@ export class BodhiProxy implements ProxyProvider {
           signingKeys
         );
         return acc;
-      }, {} as { [name: string]: ReefSigner });
+      }, {} as { [name: string]: Signer });
+
+      // Claim default EVM account for test accounts
+      for (const name in testSignersByName) {
+        await testSignersByName[name].claimDefaultAccount();
+      }
 
       BodhiProxy.wallets = { ...seedSigners, ...testSignersByName };
     }

@@ -54,6 +54,17 @@ See [examples repo](https://github.com/reef-defi/hardhat-reef-examples) for exam
 
 ### Signers
 
+#### Claiming EVM account
+
+Test accounts claim account by default. If you are using
+your own account, make sure to claim the EVM account before making any other EVM calls:
+
+```ts
+const myAccount = await hre.reef.getSignerByName("myAccount");
+await myAccount.claimDefaultAccount();
+```
+This has to be done only once, multiple calls however won't change anything.
+
 Get signers all signers.
 ```javascript
 const signers = await hre.reef.getSigners();

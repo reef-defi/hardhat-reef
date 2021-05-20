@@ -10,6 +10,7 @@ import { Deferrable } from "@ethersproject/properties";
 export declare class ReefSigner {
   public static isSigner(value: any): value is ReefSigner;
   public getAddress(): Promise<string>;
+
   public signTransaction(
     transaction: Deferrable<TransactionRequest>
   ): Promise<string>;

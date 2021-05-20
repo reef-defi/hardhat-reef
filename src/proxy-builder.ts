@@ -2,11 +2,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 
 import { BodhiProxy } from "./proxies/BodhiProxy";
 import EthersProxy from "./proxies/EthersProxy";
-import {
-  ProxyProvider,
-  REEF_CHAIN,
-  TESTNET_REEF,
-} from "./types";
+import { ProxyProvider, REEF_CHAIN, TESTNET_REEF } from "./types";
 
 export const proxyBuilder = (hre: HardhatRuntimeEnvironment): ProxyProvider => {
   switch (hre.network.name) {
