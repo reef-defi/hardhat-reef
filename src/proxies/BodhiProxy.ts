@@ -160,11 +160,6 @@ export class BodhiProxy implements ProxyProvider {
         return acc;
       }, {} as { [name: string]: Signer });
 
-      // Claim default EVM account for test accounts
-      for (const name in testSignersByName) {
-        await testSignersByName[name].claimDefaultAccount();
-      }
-
       BodhiProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
