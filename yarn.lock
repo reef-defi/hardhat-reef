@@ -3239,9 +3239,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reef-defi/evm-provider@npm:^0.1.6":
-  version: 0.1.6
-  resolution: "@reef-defi/evm-provider@npm:0.1.6"
+"@reef-defi/evm-provider@npm:0.1.6-5":
+  version: 0.1.6-5
+  resolution: "@reef-defi/evm-provider@npm:0.1.6-5"
   dependencies:
     "@open-web3/dev-config": ^0.1.10
     "@open-web3/indexer": ^0.9.2-0
@@ -3253,7 +3253,7 @@ __metadata:
     "@types/chai": ^4.2.14
     blakejs: ^1.1.0
     ethers: ^5.0.21
-  checksum: a7fc33854da6712d48f3599f343f31977867d3f1bea910a1037efb76dd9dc8da02df64e7ebff3f1fb58bc13c9c01b6f7b762148a73a74663b35668a3b219c69b
+  checksum: 31a1ffc8d49a6262c1d2cd370873e72b30994a49500c9ccae71ea82ae6c4b1302270c7634d0a1548ad861d62c055de96d47a38af2a6924e54bfae69dcbab3595
   languageName: node
   linkType: hard
 
@@ -3264,7 +3264,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@polkadot/api": ^4.3.1
     "@polkadot/types": ^4.3.1
-    "@reef-defi/evm-provider": ^0.1.6
+    "@reef-defi/evm-provider": 0.1.6-5
     "@types/chai": ^4.1.7
     "@types/fs-extra": ^5.0.4
     "@types/mocha": ^5.2.6
