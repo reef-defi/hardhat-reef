@@ -31,7 +31,7 @@ export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
 
 export const defaultReefMainnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
-  url: "", // TODO when the mainnet is published enter its url
+  url: "wss://rpc.reefscan.com/ws",
 });
 
 export const ensureExpression = (
