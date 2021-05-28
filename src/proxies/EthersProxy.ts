@@ -6,7 +6,6 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
 import { throwError } from "../utils";
-
 import { ReefSigner } from "./signers/ReefSigner";
 
 export default class implements ProxyProvider {
