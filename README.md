@@ -19,9 +19,9 @@ To inject your account insert account mnemonic in `<INSERT ACCOUNT MNEMONIC SEED
 module.exports = {
   solidity: "0.8.0",
   networks: {
-    // Localhost reef network configuration
-    reef: {
-      url: "ws://127.0.0.1:9944",
+    // Mainnet reef network configuration
+    reef_mainnet: {
+      url: "wss://rpc.reefscan.com/ws",
       seeds: {
         "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
@@ -29,6 +29,13 @@ module.exports = {
     // Testnet reef network configuration
     reef_testnet: {
       url: "wss://rpc-testnet.reefscan.com/ws",
+      seeds: {
+        "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
+      }
+    },
+    // Localhost reef network configuration
+    reef: {
+      url: "ws://127.0.0.1:9944",
       seeds: {
         "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
@@ -166,14 +173,20 @@ If you are going to use the localhost chain, run it by hand and transfer some fu
 module.exports = {
   solidity: "0.8.0",
   networks: {
-    reef: {
-      url: "ws://127.0.0.1:9944",
+    reef_mainnet: {
+      url: "wss://rpc.reefscan.com/ws",
       seeds: {
         "MyAccount": "<INSERT ACCOUNT MNEMONIC SEED>"
       }
     },
     reef_testnet: {
       url: "wss://rpc-testnet.reefscan.com/ws",
+      seeds: {
+        "MyAccount": "<INSERT ACCOUNT MNEMONIC SEED>"
+      }
+    },
+    reef: {
+      url: "ws://127.0.0.1:9944",
       seeds: {
         "MyAccount": "<INSERT ACCOUNT MNEMONIC SEED>"
       }
