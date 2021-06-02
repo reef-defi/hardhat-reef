@@ -8,6 +8,7 @@ import { ReefSigner } from "./proxies/signers/ReefSigner";
 
 export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "reef_testnet";
+export const MAINNET_REEF = "reef_mainnet";
 
 export interface ProxyProvider {
   getContractAt: (
