@@ -18,16 +18,18 @@ export class BodhiProxy implements ProxyProvider {
   private static provider: Provider | undefined;
   private static wallets: { [name: string]: ReefSigner } = {};
 
-  private hre: HardhatRuntimeEnvironment;
+  private localhost: boolean;
   private providerUrl: string;
+  private hre: HardhatRuntimeEnvironment;
   private seeds: { [key: string]: string };
 
-  constructor(hre: HardhatRuntimeEnvironment) {
+  constructor(hre: HardhatRuntimeEnvironment, localhost=false) {
     const config = hre.network.config as ReefNetworkConfig;
     console.log(`Listening on: ${config.url}`);
     this.hre = hre;
     this.providerUrl = config.url;
     this.seeds = config.seeds ? config.seeds : {};
+    this.localhost = localhost;
   }
 
   public async getContractAt(
@@ -121,6 +123,21 @@ export class BodhiProxy implements ProxyProvider {
     await BodhiProxy.provider.api.isReady;
   }
 
+  private async claimDefaultAddresses(signers: Signer[]) {
+    if (this.localhost) {
+      await Promise.all(
+        signers
+          .map(async (signer) => {
+            const address = await signer.getAddress();
+            const isClaimed = await signer.isClaimed(address);
+            if (!isClaimed) {
+              await signer.claimDefaultAccount();
+            }
+          })
+      )
+    }
+  }
+
   private async ensureWallets() {
     const wallets = await this.getWallets();
     if (wallets.length === 0) {
@@ -142,7 +159,9 @@ export class BodhiProxy implements ProxyProvider {
       const seedSigners = seedPairs.reduce((acc, { name, pair }) => {
         acc[name] = new Signer(BodhiProxy.provider!, pair.address, signingKeys);
         return acc;
-      }, {} as { [name: string]: ReefSigner });
+      }, {} as { [name: string]: Signer });
+
+      await this.claimDefaultAddresses(Object.values(seedSigners));
 
       const testSignersByName = [
         "alice",
