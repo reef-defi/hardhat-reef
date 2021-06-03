@@ -1,6 +1,6 @@
 # Hardhat Reef plugin
 
-Hardhat reef plugin allows to deploy and interact with contracts through hardhat and bodhi.js.
+Hardhat reef plugin allows to deploy and interact with contracts through hardhat and reef.js.
 
 ## Installation
 
@@ -55,7 +55,7 @@ Therefore configuration is only required if the user wants to change the URL of 
 
 ## Usage
 
-The plugin exposes `hre.reef` object for interaction with the bodhi compatible chain.
+The plugin exposes `hre.reef` object for interaction with the reef compatible chain.
 See [examples repo](https://github.com/reef-defi/hardhat-reef-examples) for examples of usage.
 
 
