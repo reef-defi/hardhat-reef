@@ -289,6 +289,12 @@ use [mocha](https://mochajs.org) and [chai](https://www.chaijs.com/).
 We recommend creating unit tests for your own modules, and integration tests for
 the interaction of the plugin with Hardhat and its dependencies.
 
+### Hardhat project structure test
+In folder `test/fixture-projects/hardhat-project` there is an example project, which can be used to test deployment on the real network. Use the command:
+```
+npx hardhat run scripts/deploy.js --network reef
+```
+
 ## Linting and autoformat
 
 All of Hardhat projects use [prettier](https://prettier.io/) and
@@ -306,3 +312,12 @@ yarn build
 ```
 
 then include the plugin in your `hardhat` repo with `yarn link`.
+
+## CI versioning
+Versioning is done with the GH action: https://github.com/mikeal/merge-release.
+
+Based on the commit messages, the version will be incremented from the latest release:
+
+- If the string "BREAKING CHANGE" is found anywhere in any of the commit messages or descriptions the major version will be incremented.
+- If a commit message begins with the string "feat" then the minor version will be increased. This works for most common commit metadata for feature additions: "feat: new API" and "feature: new API".
+- All other changes will increment the patch version.
