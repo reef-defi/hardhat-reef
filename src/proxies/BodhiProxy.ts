@@ -23,7 +23,7 @@ export class BodhiProxy implements ProxyProvider {
   private hre: HardhatRuntimeEnvironment;
   private seeds: { [key: string]: string };
 
-  constructor(hre: HardhatRuntimeEnvironment, localhost=false) {
+  constructor(hre: HardhatRuntimeEnvironment, localhost = false) {
     const config = hre.network.config as ReefNetworkConfig;
     console.log(`Listening on: ${config.url}`);
     this.hre = hre;
@@ -126,15 +126,14 @@ export class BodhiProxy implements ProxyProvider {
   private async claimDefaultAddresses(signers: Signer[]) {
     if (this.localhost) {
       await Promise.all(
-        signers
-          .map(async (signer) => {
-            const address = await signer.getAddress();
-            const isClaimed = await signer.isClaimed(address);
-            if (!isClaimed) {
-              await signer.claimDefaultAccount();
-            }
-          })
-      )
+        signers.map(async (signer) => {
+          const address = await signer.getAddress();
+          const isClaimed = await signer.isClaimed(address);
+          if (!isClaimed) {
+            await signer.claimDefaultAccount();
+          }
+        })
+      );
     }
   }
 
