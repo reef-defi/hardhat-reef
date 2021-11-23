@@ -1,12 +1,13 @@
-import { ethers } from "ethers";
+import { Signer } from "ethers";
+import ethers from "ethers"
 
-import { ReefSigner } from "./ReefSigner";
+import { ProxySigner } from "./ProxySigner";
 
 // Class is never used and is defined just for type testing purposes
 // This implementation should be as follows but SignerWithAddress is a private class. This code is just his copy.
 // export class ES extends SignerWithAddress implements ReefSigner {}
 
-export class EthersSigner extends ethers.Signer implements ReefSigner {
+export class EthersSigner extends Signer implements ProxySigner {
   public static async create(signer: ethers.providers.JsonRpcSigner) {
     return new EthersSigner(await signer.getAddress(), signer);
   }
@@ -52,4 +53,6 @@ export class EthersSigner extends ethers.Signer implements ReefSigner {
   public toJSON() {
     return `<SignerWithAddress ${this.address}>`;
   }
+
+  public async claimDefaultAccount() { }
 }
