@@ -1,7 +1,9 @@
 /dist
 test/fixture-projects/hardhat-project/artifacts/*
 test/fixture-projects/hardhat-project/cache/*
-
+.yarn
+.github
+.vscode
 # Logs
 logs
 *.log

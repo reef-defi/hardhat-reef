@@ -1,22 +1,21 @@
-import { ethers } from "ethers";
+import { Signer } from "ethers";
+import ethers from "ethers"
 
-import { ReefSigner } from "./ReefSigner";
+import { ProxySigner } from "./ProxySigner";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // Class is never used and is defined just for type testing purposes
 // This implementation should be as follows but SignerWithAddress is a private class. This code is just his copy.
 // export class ES extends SignerWithAddress implements ReefSigner {}
 
-export class EthersSigner extends ethers.Signer implements ReefSigner {
-  public static async create(signer: ethers.providers.JsonRpcSigner) {
+export class EthersSigner extends Signer implements ProxySigner {
+  public static async create(signer: SignerWithAddress) {
     return new EthersSigner(await signer.getAddress(), signer);
   }
 
-  private constructor(
-    public readonly address: string,
-    private readonly _signer: ethers.providers.JsonRpcSigner
-  ) {
+  private constructor(public readonly address: string, private readonly _signer: SignerWithAddress) {
     super();
-    (this as any).provider = _signer.provider;
+    (this as any).provider = _signer.provider!;
   }
 
   public async getAddress(): Promise<string> {
@@ -52,4 +51,6 @@ export class EthersSigner extends ethers.Signer implements ReefSigner {
   public toJSON() {
     return `<SignerWithAddress ${this.address}>`;
   }
+
+  public async claimDefaultAccount() { }
 }

@@ -12,11 +12,11 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import { ensureExpression, throwError } from "../utils";
 
-import { ReefSigner } from "./signers/ReefSigner";
+import { ProxySigner } from "./signers/ProxySigner";
 
-export class BodhiProxy implements ProxyProvider {
+export default class ReefProxy implements ProxyProvider {
   private static provider: Provider | undefined;
-  private static wallets: { [name: string]: ReefSigner } = {};
+  private static wallets: { [name: string]: ProxySigner } = {};
 
   private localhost: boolean;
   private providerUrl: string;
@@ -35,7 +35,7 @@ export class BodhiProxy implements ProxyProvider {
   public async getContractAt(
     nameOrAbi: string | any[],
     address: string,
-    signer?: ReefSigner
+    signer?: ProxySigner
   ): Promise<Contract> {
     let artifact: any[];
 
@@ -51,7 +51,7 @@ export class BodhiProxy implements ProxyProvider {
 
   public async getContractFactory(
     contractName: string,
-    signer?: ReefSigner | string
+    signer?: ProxySigner | string
   ) {
     await this.ensureSetup();
     const wallet = await this.resolveSigner(signer);
@@ -66,7 +66,7 @@ export class BodhiProxy implements ProxyProvider {
 
   public async getProvider() {
     await this.ensureProvider();
-    return BodhiProxy.provider!;
+    return ReefProxy.provider!;
   }
 
   public async getSigner(address: string) {
@@ -86,22 +86,22 @@ export class BodhiProxy implements ProxyProvider {
 
   public async getSignerByName(name: string) {
     await this.ensureSetup();
-    if (!(name in BodhiProxy.wallets)) {
+    if (!(name in ReefProxy.wallets)) {
       throwError("Signer does not exist!");
     }
-    return BodhiProxy.wallets[name];
+    return ReefProxy.wallets[name];
   }
 
-  private async getWallets(): Promise<ReefSigner[]> {
-    return Object.entries(BodhiProxy.wallets).map(([, value]) => value);
+  private async getWallets(): Promise<ProxySigner[]> {
+    return Object.entries(ReefProxy.wallets).map(([, value]) => value);
   }
 
   private async resolveSigner(
-    signer?: ReefSigner | string
-  ): Promise<ReefSigner> {
+    signer?: ProxySigner | string
+  ): Promise<ProxySigner> {
     await this.ensureSetup();
     if (signer === undefined) {
-      return BodhiProxy.wallets.alice;
+      return ReefProxy.wallets.alice;
     }
     if (typeof signer === "string") {
       return this.getSigner(signer);
@@ -115,26 +115,12 @@ export class BodhiProxy implements ProxyProvider {
   }
 
   private async ensureProvider() {
-    if (!BodhiProxy.provider) {
-      BodhiProxy.provider = new Provider({
+    if (!ReefProxy.provider) {
+      ReefProxy.provider = new Provider({
         provider: new WsProvider(this.providerUrl),
       });
     }
-    await BodhiProxy.provider.api.isReady;
-  }
-
-  private async claimDefaultAddresses(signers: Signer[]) {
-    if (this.localhost) {
-      await Promise.all(
-        signers.map(async (signer) => {
-          const address = await signer.getAddress();
-          const isClaimed = await signer.isClaimed(address);
-          if (!isClaimed) {
-            await signer.claimDefaultAccount();
-          }
-        })
-      );
-    }
+    await ReefProxy.provider.api.isReady;
   }
 
   private async ensureWallets() {
@@ -144,7 +130,7 @@ export class BodhiProxy implements ProxyProvider {
 
       const testPairs = createTestPairs();
       const signingKeys = new TestAccountSigningKey(
-        BodhiProxy.provider!.api.registry
+        ReefProxy.provider!.api.registry
       );
       signingKeys.addKeyringPair(Object.values(testPairs));
 
@@ -156,11 +142,9 @@ export class BodhiProxy implements ProxyProvider {
       signingKeys.addKeyringPair(seedPairs.map(({ pair }) => pair));
 
       const seedSigners = seedPairs.reduce((acc, { name, pair }) => {
-        acc[name] = new Signer(BodhiProxy.provider!, pair.address, signingKeys);
+        acc[name] = new Signer(ReefProxy.provider!, pair.address, signingKeys);
         return acc;
       }, {} as { [name: string]: Signer });
-
-      await this.claimDefaultAddresses(Object.values(seedSigners));
 
       const testSignersByName = [
         "alice",
@@ -171,14 +155,14 @@ export class BodhiProxy implements ProxyProvider {
         "ferdie",
       ].reduce((acc, name) => {
         acc[name] = new Signer(
-          BodhiProxy.provider!,
+          ReefProxy.provider!,
           testPairs[name].address,
           signingKeys
         );
         return acc;
       }, {} as { [name: string]: Signer });
 
-      BodhiProxy.wallets = { ...seedSigners, ...testSignersByName };
+      ReefProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
 }

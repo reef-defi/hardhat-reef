@@ -2,11 +2,8 @@ import "@nomiclabs/hardhat-ethers";
 import { extendConfig, extendEnvironment } from "hardhat/config";
 import { lazyObject } from "hardhat/plugins";
 import { HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
-import path from "path";
-
 import "./built-in/run";
 import { proxyBuilder } from "./proxy-builder";
-// import "./built-in/test";
 import "./type-extensions";
 import {
   defaultReefMainnetConfig,

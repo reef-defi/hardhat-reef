@@ -4,7 +4,7 @@ import { Contract, ContractFactory } from "ethers";
 import type { ethers } from "ethers";
 import { HttpNetworkConfig } from "hardhat/types";
 
-import { ReefSigner } from "./proxies/signers/ReefSigner";
+import { ProxySigner } from "./proxies/signers/ProxySigner";
 
 export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "reef_testnet";
@@ -14,16 +14,16 @@ export interface ProxyProvider {
   getContractAt: (
     nameOrAbi: string | any[],
     address: string,
-    signer?: ReefSigner
+    signer?: ProxySigner
   ) => Promise<Contract>;
   getContractFactory: (
     contract: string,
-    signer?: ReefSigner | string
+    signer?: ProxySigner | string
   ) => Promise<ContractFactory>;
 
-  getSigner(address: string): Promise<ReefSigner>;
-  getSigners(): Promise<ReefSigner[]>;
-  getSignerByName(name: string): Promise<ReefSigner>;
+  getSigner(address: string): Promise<ProxySigner>;
+  getSigners(): Promise<ProxySigner[]>;
+  getSignerByName(name: string): Promise<ProxySigner>;
 
   getProvider(): Promise<Provider>;
 }
