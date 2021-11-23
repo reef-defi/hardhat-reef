@@ -6,8 +6,9 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
 import { throwError } from "../utils";
+import { EthersSigner } from "./signers/EthersSigner";
 
-import { ReefSigner } from "./signers/ReefSigner";
+import { ProxySigner } from "./signers/ProxySigner";
 
 export default class implements ProxyProvider {
   private eth: HardhatEthers;
@@ -19,11 +20,16 @@ export default class implements ProxyProvider {
   }
 
   public async getSigner(address: string) {
-    return this.eth.getSigner(address);
+    const ethSigner = await this.eth.getSigner(address);
+    return await EthersSigner.create(ethSigner);
   }
 
   public async getSigners() {
-    return this.eth.getSigners();
+    const ethSigners = await this.eth.getSigners();
+    const singers = await Promise.all(
+      ethSigners.map(async (signer) => await EthersSigner.create(signer))
+    );
+    return singers;
   }
 
   public async getSignerByName(name: string) {
@@ -37,22 +43,22 @@ export default class implements ProxyProvider {
   public async getContractAt(
     nameOrAbi: string | any[],
     address: string,
-    signer?: ReefSigner
+    signer?: ProxySigner
   ): Promise<Contract> {
     return this.eth.getContractAt(
       nameOrAbi,
       address,
-      signer as SignerWithAddress
+      signer as EthersSigner
     );
   }
 
   public async getContractFactory(
     contractName: string,
-    signer?: ReefSigner | string
+    signer?: ProxySigner | string
   ) {
     this.eth.provider;
     const contract = await this.hre.artifacts.readArtifact(contractName);
-    const wallet = (await this.resolveSigner(signer)) as SignerWithAddress;
+    const wallet = (await this.resolveSigner(signer)) as EthersSigner;
     return ContractFactory.fromSolidity(contract).connect(wallet);
   }
 
@@ -64,10 +70,10 @@ export default class implements ProxyProvider {
   }
 
   private async resolveSigner(
-    signer?: ReefSigner | string
-  ): Promise<ReefSigner> {
+    signer?: ProxySigner | string
+  ): Promise<ProxySigner> {
     if (signer === undefined) {
-      return (await this.eth.getSigners())[0];
+      return (await this.getSigners())[0];
     }
     if (typeof signer === "string") {
       return this.getSigner(signer);
