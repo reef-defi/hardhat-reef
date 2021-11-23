@@ -15,6 +15,7 @@ export class EthersSigner extends Signer implements ProxySigner {
 
   private constructor(public readonly address: string, private readonly _signer: SignerWithAddress) {
     super();
+    (this as any).provider = _signer.provider!;
   }
 
   public async getAddress(): Promise<string> {

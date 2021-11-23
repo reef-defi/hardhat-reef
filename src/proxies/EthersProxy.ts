@@ -56,9 +56,8 @@ export default class implements ProxyProvider {
     contractName: string,
     signer?: ProxySigner | string
   ) {
-    this.eth.provider;
+    const wallet = await this.resolveSigner(signer);
     const contract = await this.hre.artifacts.readArtifact(contractName);
-    const wallet = (await this.resolveSigner(signer)) as EthersSigner;
     return ContractFactory.fromSolidity(contract).connect(wallet);
   }
 
@@ -71,14 +70,15 @@ export default class implements ProxyProvider {
 
   private async resolveSigner(
     signer?: ProxySigner | string
-  ): Promise<ProxySigner> {
+  ): Promise<EthersSigner> {
     if (signer === undefined) {
-      return (await this.getSigners())[0];
+      const signers = await this.getSigners();
+      return signers[0];
     }
     if (typeof signer === "string") {
-      return this.getSigner(signer);
+      return await this.getSigner(signer);
     }
-    return signer;
+    return signer as EthersSigner;
   }
 }
 
