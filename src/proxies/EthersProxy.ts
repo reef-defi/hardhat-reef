@@ -80,6 +80,10 @@ export default class implements ProxyProvider {
     }
     return signer as EthersSigner;
   }
+
+  async verifyContract(address: string, name: string, args: any) {
+   console.warn("Ether proxy did not verify contract. Use hardhat ether scan library to verify contract!");
+  }
 }
 
 const signerNames = ["alice", "bob", "charlie", "dave", "eve", "ferdie"].reduce(

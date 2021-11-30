@@ -165,6 +165,9 @@ export default class ReefProxy implements ProxyProvider {
       ReefProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
+  async verifyContract(address: string, name: string, args: any) {
+    
+  }
 }
 
 const createSeedKeyringPair = (seed: string): KeyringPair => {
