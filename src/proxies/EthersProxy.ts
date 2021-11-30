@@ -1,4 +1,3 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Provider } from "@reef-defi/evm-provider";
 import { Contract, ContractFactory } from "ethers";
 import { HardhatPluginError } from "hardhat/plugins";
