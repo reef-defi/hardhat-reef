@@ -3,6 +3,8 @@ import { HardhatPluginError } from "hardhat/internal/core/errors";
 
 import { ReefNetworkConfig } from "./types";
 
+const verification_test = "http://localhost:3000/api/verificator/submit-verification";
+
 export const ensureFilePath = async (filePath: string) => {
   if (!(await fsExtra.pathExists(filePath))) {
     throw new HardhatPluginError(
@@ -27,11 +29,13 @@ export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
 export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "wss://rpc-testnet.reefscan.com/ws",
+  verificationUrl: verification_test,
 });
 
 export const defaultReefMainnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "wss://rpc.reefscan.com/ws",
+  verificationUrl: verification_test,
 });
 
 export const ensureExpression = (

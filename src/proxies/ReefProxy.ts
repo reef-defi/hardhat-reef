@@ -6,13 +6,23 @@ import {
   Signer,
   TestAccountSigningKey,
 } from "@reef-defi/evm-provider";
+// import axios from "axios";
 import { Contract, ContractFactory } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
 import { ensureExpression, throwError } from "../utils";
 
+// import {getInputFromCompilationJob} from "hardhat/internal/solidity/compiler/compiler-input";
+
+import {
+  getSolidityFilesCachePath,
+  SolidityFilesCache,
+} from "hardhat/builtin-tasks/utils/solidity-files-cache";
+import * as taskTypes from "hardhat/types";
 import { ProxySigner } from "./signers/ProxySigner";
+
+type Source = {[filename: string]: string};
 
 export default class ReefProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -20,6 +30,7 @@ export default class ReefProxy implements ProxyProvider {
 
   private localhost: boolean;
   private providerUrl: string;
+  private verificationUrl?: string;
   private hre: HardhatRuntimeEnvironment;
   private seeds: { [key: string]: string };
 
@@ -30,6 +41,7 @@ export default class ReefProxy implements ProxyProvider {
     this.providerUrl = config.url;
     this.seeds = config.seeds ? config.seeds : {};
     this.localhost = localhost;
+    this.verificationUrl = config.verificationUrl;
   }
 
   public async getContractAt(
@@ -165,8 +177,60 @@ export default class ReefProxy implements ProxyProvider {
       ReefProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
-  async verifyContract(address: string, name: string, args: any) {
-    
+  async verifyContract(address: string, contractName: string, args: any) {
+    if (this.localhost) {
+      return;
+    }
+    if (!this.verificationUrl) {
+      console.warn("Verification was skipped. Verification URL is missing in config");
+      return;
+    }
+
+    const sourcePaths: string[] = await this.hre.run(
+      TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS
+    );
+
+    const sourceNames: string[] = await this.hre.run(
+      TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES,
+      {
+        sourcePaths,
+      }
+    );
+
+    const solidityFilesCachePath = getSolidityFilesCachePath(this.hre.config.paths);
+    let solidityFilesCache = await SolidityFilesCache.readFromFile(
+      solidityFilesCachePath
+    );
+
+    const dependencyGraph: taskTypes.DependencyGraph = await this.hre.run(
+      TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH,
+      { sourceNames, solidityFilesCache }
+    );
+
+    const resolvedFiles = dependencyGraph.getResolvedFiles();
+
+    const contractFile = resolvedFiles.find((file) => file.content.rawContent.includes(contractName));
+    if (!contractFile) {
+      throw new Error("Contract was not found and can not be verified!");
+    }
+
+    let dependencies = dependencyGraph.getDependencies(contractFile);
+
+    const sources = dependencies
+      .reduce(
+        (prev, file) => ({...prev, [file.sourceName]: file.content.rawContent}),
+        {[contractFile.sourceName]: contractFile.content.rawContent}
+      );
+
+    console.log(sources);
+    // await axios
+    //   .post(this.verificationUrl, {name, address, args: JSON.stringify(args),})
+    //   .then((r) => {
+
+    //   })
+    //   .catch((err) => {
+
+    //   });
   }
 }
 
@@ -174,3 +238,4 @@ const createSeedKeyringPair = (seed: string): KeyringPair => {
   const keyring = new Keyring({ type: "sr25519" });
   return keyring.addFromUri(seed);
 };
+import {TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES, TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH} from "hardhat/builtin-tasks/task-names"

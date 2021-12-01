@@ -36,6 +36,7 @@ export interface ProxyProvider {
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
   path?: string;
+  verificationUrl?: string;
   seeds?: { [key: string]: string };
 }
 
