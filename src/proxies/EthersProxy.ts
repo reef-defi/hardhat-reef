@@ -1,4 +1,3 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Provider } from "@reef-defi/evm-provider";
 import { Contract, ContractFactory } from "ethers";
 import { HardhatPluginError } from "hardhat/plugins";
@@ -79,6 +78,10 @@ export default class implements ProxyProvider {
       return await this.getSigner(signer);
     }
     return signer as EthersSigner;
+  }
+
+  async verifyContract(address: string, name: string, args: any) {
+   console.warn("Ether proxy did not verify contract. Use hardhat ether scan library to verify contract!");
   }
 }
 

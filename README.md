@@ -279,6 +279,39 @@ Run interaction script for the Local reet network: `yarn hardhat run script/inte
 Run interaction script for the Reef test network: `yarn hardhat run script/interact.js --network reef_testnet`.
 
 
+### Contract verification
+
+Hardhat reef also supports verifying contract from the Reef chain!
+Here is an example of contract deploymant and verification combined:
+
+
+```javascript
+const hre = require("hardhat");
+
+const wait = async (ms) => new Promise((res) => setTimeout(res, ms));
+
+async function main() {
+  const signer = await hre.reef.getSignerByName("Acc");
+  const ERC20Contract = await hre.reef.getContractFactory("ERC20Contract", signer);
+  const args = ["198357219385752193875123"];
+  const erc20CContract = await ERC20Contract.deploy(...args);
+  await erc20CContract.deployed();
+
+  // Just to make sure crawler recognizes contract first!
+  // wait will be handled by api on the next update
+  await wait(4000);
+  await hre.reef.verifyContract(erc20CContract.address, "ERC20Contract", args);
+
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
 # Developement
 
 ## Testing
