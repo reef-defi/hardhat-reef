@@ -241,10 +241,10 @@ export default class ReefProxy implements ProxyProvider {
       arguments: JSON.stringify(args),
       filename: contractFile.sourceName,
       target: compiler.settings.evmVersion || "london",
-      optimization: `${compiler.settings.optimizer.enabled}`,
-      runs: compiler.settings.optimizer.runs,
+      optimization: `${compiler.settings.optimizer.enabled || false}`,
+      runs: compiler.settings.optimizer.runs || 200,
     }
-    // console.log(body);
+    
     await axios
       .post(this.verificationUrl, body)
       .then((r) => {
