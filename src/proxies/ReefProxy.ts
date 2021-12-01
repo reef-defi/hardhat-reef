@@ -6,12 +6,12 @@ import {
   Signer,
   TestAccountSigningKey,
 } from "@reef-defi/evm-provider";
-// import axios from "axios";
+import axios from "axios";
 import { Contract, ContractFactory } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { ProxyProvider, ReefNetworkConfig } from "../types";
-import { ensureExpression, throwError } from "../utils";
+import { availableCompilerVersions, ensureExpression, throwError } from "../utils";
 
 // import {getInputFromCompilationJob} from "hardhat/internal/solidity/compiler/compiler-input";
 
@@ -21,8 +21,8 @@ import {
 } from "hardhat/builtin-tasks/utils/solidity-files-cache";
 import * as taskTypes from "hardhat/types";
 import { ProxySigner } from "./signers/ProxySigner";
+import {TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES, TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH} from "hardhat/builtin-tasks/task-names"
 
-type Source = {[filename: string]: string};
 
 export default class ReefProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -177,7 +177,8 @@ export default class ReefProxy implements ProxyProvider {
       ReefProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
-  async verifyContract(address: string, contractName: string, args: any) {
+
+  async verifyContract(address: string, name: string, args: any) {
     if (this.localhost) {
       return;
     }
@@ -207,30 +208,51 @@ export default class ReefProxy implements ProxyProvider {
       { sourceNames, solidityFilesCache }
     );
 
-    const resolvedFiles = dependencyGraph.getResolvedFiles();
 
-    const contractFile = resolvedFiles.find((file) => file.content.rawContent.includes(contractName));
+    const contractFile = dependencyGraph.getResolvedFiles()
+      .find((file) => file.content.rawContent.includes(name));
+
     if (!contractFile) {
       throw new Error("Contract was not found and can not be verified!");
     }
 
-    let dependencies = dependencyGraph.getDependencies(contractFile);
+    const dependencies = resolveContractDependencies(contractFile, dependencyGraph);
+    const source = dependencies
+    .reduce(
+      (prev, current) => ({...prev, [current.sourceName]: current.content.rawContent}),
+      {[contractFile.sourceName]: contractFile.content.rawContent}
+    );
+    
+    const compiler = this.hre.config.solidity.compilers[0];
 
-    const sources = dependencies
-      .reduce(
-        (prev, file) => ({...prev, [file.sourceName]: file.content.rawContent}),
-        {[contractFile.sourceName]: contractFile.content.rawContent}
-      );
+    const compilerVersion = availableCompilerVersions.find(
+      (version) => version.includes(compiler.version)
+    );
 
-    console.log(sources);
-    // await axios
-    //   .post(this.verificationUrl, {name, address, args: JSON.stringify(args),})
-    //   .then((r) => {
+    if (!compilerVersion) {
+      throw new Error("Compiler version was not found");
+    }
 
-    //   })
-    //   .catch((err) => {
-
-    //   });
+    const body = {
+      name,
+      source: JSON.stringify(source),
+      compilerVersion,
+      address: address,
+      arguments: JSON.stringify(args),
+      filename: contractFile.sourceName,
+      target: compiler.settings.evmVersion || "london",
+      optimization: `${compiler.settings.optimizer.enabled}`,
+      runs: compiler.settings.optimizer.runs,
+    }
+    // console.log(body);
+    await axios
+      .post(this.verificationUrl, body)
+      .then((r) => {
+        console.log(`Contract ${name} verified!`);
+      })
+      .catch((err) => {
+        console.log(`Contract ${name} was not verified!`);
+      });
   }
 }
 
@@ -238,4 +260,19 @@ const createSeedKeyringPair = (seed: string): KeyringPair => {
   const keyring = new Keyring({ type: "sr25519" });
   return keyring.addFromUri(seed);
 };
-import {TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES, TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH} from "hardhat/builtin-tasks/task-names"
+
+const resolveContractDependencies = (file: taskTypes.ResolvedFile, dependencyGraph: taskTypes.DependencyGraph): taskTypes.ResolvedFile[] => compress(
+   dependencyGraph.getDependencies(file).map((innerDep) => [innerDep, ...resolveContractDependencies(innerDep, dependencyGraph)])
+);
+
+export const compress = <T,> (values: T[][]): T[] => {
+  let newValues: T[] = [];
+  for (const value of values) {
+    for (const innerValue of value) {
+      newValues.push(innerValue)
+    }
+  }
+
+  return newValues;
+}
+  
