@@ -29,13 +29,13 @@ export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
 export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "wss://rpc-testnet.reefscan.com/ws",
-  scanUrl: verification_test,
+  scanUrl: "https://testnet.reefscan.com/",
 });
 
 export const defaultReefMainnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "wss://rpc.reefscan.com/ws",
-  scanUrl: verification_test,
+  scanUrl: "https://reefscan.com/",
 });
 
 export const ensureExpression = (

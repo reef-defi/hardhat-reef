@@ -293,15 +293,11 @@ const wait = async (ms) => new Promise((res) => setTimeout(res, ms));
 async function main() {
   const signer = await hre.reef.getSignerByName("Acc");
   const ERC20Contract = await hre.reef.getContractFactory("ERC20Contract", signer);
-  const args = ["198357219385752193875123"];
+  const args = ["180000000000000000000000000000000000"];
   const erc20CContract = await ERC20Contract.deploy(...args);
   await erc20CContract.deployed();
 
-  // Just to make sure crawler recognizes contract first!
-  // wait will be handled by api on the next update
-  await wait(4000);
   await hre.reef.verifyContract(erc20CContract.address, "ERC20Contract", args);
-
 }
 
 main()
