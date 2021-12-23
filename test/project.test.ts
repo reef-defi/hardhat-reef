@@ -76,13 +76,13 @@ describe("Unit testing", function () {
     it("Deployed Flipper contract has correct value", async function () {
       const Flipper = await this.hre.reef.getContractFactory("Flipper");
       const flipper = await Flipper.deploy(true);
-      await flipper.deployed()
+      await flipper.deployed();
       assert.equal(await flipper.get(), true);
     });
     it("Switch values in Flipper contract", async function () {
       const Flipper = await this.hre.reef.getContractFactory("Flipper");
       const flipper = await Flipper.deploy(true);
-      await flipper.deployed()
+      await flipper.deployed();
       assert.equal(await flipper.get(), true);
       await flipper.flip();
       assert.equal(await flipper.get(), false);
