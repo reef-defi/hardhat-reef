@@ -27,16 +27,12 @@ export interface ProxyProvider {
 
   getProvider(): Promise<Provider>;
 
-  verifyContract(
-    address: string,
-    name: string,
-    args: any,
-  ): Promise<void>;
+  verifyContract(address: string, name: string, args: any): Promise<void>;
 }
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
   path?: string;
-  verificationUrl?: string;
+  scanUrl?: string;
   seeds?: { [key: string]: string };
 }
 

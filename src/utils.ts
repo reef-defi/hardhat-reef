@@ -3,7 +3,7 @@ import { HardhatPluginError } from "hardhat/internal/core/errors";
 
 import { ReefNetworkConfig } from "./types";
 
-const verification_test = "http://localhost:3000/api/verificator/submit-verification";
+const verification_test = "http://localhost:3000";
 
 export const ensureFilePath = async (filePath: string) => {
   if (!(await fsExtra.pathExists(filePath))) {
@@ -29,13 +29,13 @@ export const defaultReefNetworkConfig = (): ReefNetworkConfig => ({
 export const defaultReefTestnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "wss://rpc-testnet.reefscan.com/ws",
-  verificationUrl: verification_test,
+  scanUrl: "https://testnet.reefscan.com",
 });
 
 export const defaultReefMainnetConfig = (): ReefNetworkConfig => ({
   ...defaultReefNetworkConfig(),
   url: "wss://rpc.reefscan.com/ws",
-  verificationUrl: verification_test,
+  scanUrl: "https://reefscan.com",
 });
 
 export const ensureExpression = (
@@ -49,6 +49,20 @@ export const ensureExpression = (
 
 export const throwError = (message: string) => {
   throw new HardhatPluginError("Hardhat-reef", message);
+};
+
+export const wait = async (ms: number): Promise<void> =>
+  new Promise((res) => setTimeout(res, ms));
+
+export const compress = <T>(values: T[][]): T[] => {
+  const newValues: T[] = [];
+  for (const value of values) {
+    for (const innerValue of value) {
+      newValues.push(innerValue);
+    }
+  }
+
+  return newValues;
 };
 
 export const availableCompilerVersions = [

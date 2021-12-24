@@ -1,8 +1,8 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Signer } from "ethers";
-import ethers from "ethers"
+import ethers from "ethers";
 
 import { ProxySigner } from "./ProxySigner";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 // Class is never used and is defined just for type testing purposes
 // This implementation should be as follows but SignerWithAddress is a private class. This code is just his copy.
@@ -13,7 +13,10 @@ export class EthersSigner extends Signer implements ProxySigner {
     return new EthersSigner(await signer.getAddress(), signer);
   }
 
-  private constructor(public readonly address: string, private readonly _signer: SignerWithAddress) {
+  private constructor(
+    public readonly address: string,
+    private readonly _signer: SignerWithAddress
+  ) {
     super();
     (this as any).provider = _signer.provider!;
   }
@@ -52,5 +55,5 @@ export class EthersSigner extends Signer implements ProxySigner {
     return `<SignerWithAddress ${this.address}>`;
   }
 
-  public async claimDefaultAccount() { }
+  public async claimDefaultAccount() {}
 }

@@ -8,21 +8,28 @@ import {
 } from "@reef-defi/evm-provider";
 import axios from "axios";
 import { Contract, ContractFactory } from "ethers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
-import { ProxyProvider, ReefNetworkConfig } from "../types";
-import { availableCompilerVersions, ensureExpression, throwError } from "../utils";
-
-// import {getInputFromCompilationJob} from "hardhat/internal/solidity/compiler/compiler-input";
-
+import {
+  TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH,
+  TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES,
+  TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS,
+} from "hardhat/builtin-tasks/task-names";
 import {
   getSolidityFilesCachePath,
   SolidityFilesCache,
 } from "hardhat/builtin-tasks/utils/solidity-files-cache";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import * as taskTypes from "hardhat/types";
-import { ProxySigner } from "./signers/ProxySigner";
-import {TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS, TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES, TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH} from "hardhat/builtin-tasks/task-names"
 
+import { ProxyProvider, ReefNetworkConfig } from "../types";
+import {
+  availableCompilerVersions,
+  compress,
+  ensureExpression,
+  throwError,
+  wait,
+} from "../utils";
+
+import { ProxySigner } from "./signers/ProxySigner";
 
 export default class ReefProxy implements ProxyProvider {
   private static provider: Provider | undefined;
@@ -30,7 +37,7 @@ export default class ReefProxy implements ProxyProvider {
 
   private localhost: boolean;
   private providerUrl: string;
-  private verificationUrl?: string;
+  private scanUrl?: string;
   private hre: HardhatRuntimeEnvironment;
   private seeds: { [key: string]: string };
 
@@ -41,7 +48,7 @@ export default class ReefProxy implements ProxyProvider {
     this.providerUrl = config.url;
     this.seeds = config.seeds ? config.seeds : {};
     this.localhost = localhost;
-    this.verificationUrl = config.verificationUrl;
+    this.scanUrl = config.scanUrl;
   }
 
   public async getContractAt(
@@ -102,6 +109,94 @@ export default class ReefProxy implements ProxyProvider {
       throwError("Signer does not exist!");
     }
     return ReefProxy.wallets[name];
+  }
+
+  public async verifyContract(address: string, name: string, args: any) {
+    if (this.localhost) {
+      return;
+    }
+    if (!this.scanUrl) {
+      console.warn(
+        "Verification was skipped. Verification URL is missing in config"
+      );
+      return;
+    }
+
+    const sourcePaths: string[] = await this.hre.run(
+      TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS
+    );
+
+    const sourceNames: string[] = await this.hre.run(
+      TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES,
+      {
+        sourcePaths,
+      }
+    );
+
+    const solidityFilesCachePath = getSolidityFilesCachePath(
+      this.hre.config.paths
+    );
+    const solidityFilesCache = await SolidityFilesCache.readFromFile(
+      solidityFilesCachePath
+    );
+
+    const dependencyGraph: taskTypes.DependencyGraph = await this.hre.run(
+      TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH,
+      { sourceNames, solidityFilesCache }
+    );
+
+    const contractFile = dependencyGraph
+      .getResolvedFiles()
+      .find((file) => file.content.rawContent.includes(name));
+
+    if (!contractFile) {
+      throw new Error("Contract was not found and can not be verified!");
+    }
+
+    const dependencies = resolveContractDependencies(
+      contractFile,
+      dependencyGraph
+    );
+    const source = dependencies.reduce(
+      (prev, current) => ({
+        ...prev,
+        [current.sourceName]: current.content.rawContent,
+      }),
+      { [contractFile.sourceName]: contractFile.content.rawContent }
+    );
+
+    const compiler = this.hre.config.solidity.compilers[0];
+
+    const compilerVersion = availableCompilerVersions.find((version) =>
+      version.includes(compiler.version)
+    );
+
+    if (!compilerVersion) {
+      throw new Error("Compiler version was not found");
+    }
+
+    const body = {
+      name,
+      source: JSON.stringify(source),
+      compilerVersion,
+      address,
+      arguments: JSON.stringify(args),
+      filename: contractFile.sourceName,
+      target: compiler.settings.evmVersion || "london",
+      optimization: `${compiler.settings.optimizer.enabled || false}`,
+      runs: compiler.settings.optimizer.runs || 200,
+    };
+
+    await waitUntilContractExists(this.scanUrl, address);
+
+    await axios
+      .post(`${this.scanUrl}/api/verificator/submit-verification`, body)
+      .then((r) => {
+        console.log(`Contract ${name} verified!`);
+      })
+      .catch((err) => {
+        console.log(`Contract ${name} was not verified!`);
+      });
   }
 
   private async getWallets(): Promise<ProxySigner[]> {
@@ -177,83 +272,6 @@ export default class ReefProxy implements ProxyProvider {
       ReefProxy.wallets = { ...seedSigners, ...testSignersByName };
     }
   }
-
-  async verifyContract(address: string, name: string, args: any) {
-    if (this.localhost) {
-      return;
-    }
-    if (!this.verificationUrl) {
-      console.warn("Verification was skipped. Verification URL is missing in config");
-      return;
-    }
-
-    const sourcePaths: string[] = await this.hre.run(
-      TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS
-    );
-
-    const sourceNames: string[] = await this.hre.run(
-      TASK_COMPILE_SOLIDITY_GET_SOURCE_NAMES,
-      {
-        sourcePaths,
-      }
-    );
-
-    const solidityFilesCachePath = getSolidityFilesCachePath(this.hre.config.paths);
-    let solidityFilesCache = await SolidityFilesCache.readFromFile(
-      solidityFilesCachePath
-    );
-
-    const dependencyGraph: taskTypes.DependencyGraph = await this.hre.run(
-      TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH,
-      { sourceNames, solidityFilesCache }
-    );
-
-
-    const contractFile = dependencyGraph.getResolvedFiles()
-      .find((file) => file.content.rawContent.includes(name));
-
-    if (!contractFile) {
-      throw new Error("Contract was not found and can not be verified!");
-    }
-
-    const dependencies = resolveContractDependencies(contractFile, dependencyGraph);
-    const source = dependencies
-    .reduce(
-      (prev, current) => ({...prev, [current.sourceName]: current.content.rawContent}),
-      {[contractFile.sourceName]: contractFile.content.rawContent}
-    );
-    
-    const compiler = this.hre.config.solidity.compilers[0];
-
-    const compilerVersion = availableCompilerVersions.find(
-      (version) => version.includes(compiler.version)
-    );
-
-    if (!compilerVersion) {
-      throw new Error("Compiler version was not found");
-    }
-
-    const body = {
-      name,
-      source: JSON.stringify(source),
-      compilerVersion,
-      address: address,
-      arguments: JSON.stringify(args),
-      filename: contractFile.sourceName,
-      target: compiler.settings.evmVersion || "london",
-      optimization: `${compiler.settings.optimizer.enabled || false}`,
-      runs: compiler.settings.optimizer.runs || 200,
-    }
-    
-    await axios
-      .post(this.verificationUrl, body)
-      .then((r) => {
-        console.log(`Contract ${name} verified!`);
-      })
-      .catch((err) => {
-        console.log(`Contract ${name} was not verified!`);
-      });
-  }
 }
 
 const createSeedKeyringPair = (seed: string): KeyringPair => {
@@ -261,18 +279,44 @@ const createSeedKeyringPair = (seed: string): KeyringPair => {
   return keyring.addFromUri(seed);
 };
 
-const resolveContractDependencies = (file: taskTypes.ResolvedFile, dependencyGraph: taskTypes.DependencyGraph): taskTypes.ResolvedFile[] => compress(
-   dependencyGraph.getDependencies(file).map((innerDep) => [innerDep, ...resolveContractDependencies(innerDep, dependencyGraph)])
-);
+const resolveContractDependencies = (
+  file: taskTypes.ResolvedFile,
+  dependencyGraph: taskTypes.DependencyGraph
+): taskTypes.ResolvedFile[] =>
+  compress(
+    dependencyGraph
+      .getDependencies(file)
+      .map((innerDep) => [
+        innerDep,
+        ...resolveContractDependencies(innerDep, dependencyGraph),
+      ])
+  );
 
-export const compress = <T,> (values: T[][]): T[] => {
-  let newValues: T[] = [];
-  for (const value of values) {
-    for (const innerValue of value) {
-      newValues.push(innerValue)
+const doesContractExist = async (
+  url: string,
+  address: string
+): Promise<boolean> =>
+  axios
+    .get(`${url}/api/contract/${address}`)
+    .then((_) => true)
+    .catch((_) => false);
+
+// Complete await cicle is in pattern: 1+2+3+...+steps.
+// Execution time = steps*(steps+1) / 2 s;
+// I.E. Steps = 10; Execution time = 55s
+const waitUntilContractExists = async (
+  url: string,
+  address: string,
+  steps = 10
+): Promise<void> => {
+  let delayLength = 1000;
+  for (let i = 0; i < steps; i++) {
+    await wait(delayLength);
+    const res = await doesContractExist(url, address);
+    if (res) {
+      return;
     }
+    delayLength += 1000;
   }
-
-  return newValues;
-}
-  
+  throw new Error("Contract was not detected");
+};

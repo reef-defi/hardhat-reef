@@ -17,11 +17,12 @@ To inject your account insert account mnemonic in `<INSERT ACCOUNT MNEMONIC SEED
 
 ```javascript
 module.exports = {
-  solidity: "0.8.0",
+  solidity: "0.8.4",
   networks: {
     // Mainnet reef network configuration
     reef_mainnet: {
       url: "wss://rpc.reefscan.com/ws",
+      scanUrl: "https://reefscan.com"
       seeds: {
         "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
@@ -29,6 +30,7 @@ module.exports = {
     // Testnet reef network configuration
     reef_testnet: {
       url: "wss://rpc-testnet.reefscan.com/ws",
+      scanUrl: "https://reefscan.com"
       seeds: {
         "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
@@ -36,6 +38,7 @@ module.exports = {
     // Localhost reef network configuration
     reef: {
       url: "ws://127.0.0.1:9944",
+      scanUrl: "http://localhost:3000"
       seeds: {
         "MyAccount1": "<INSERT ACCOUNT MNEMONIC SEED>",
       }
@@ -293,15 +296,11 @@ const wait = async (ms) => new Promise((res) => setTimeout(res, ms));
 async function main() {
   const signer = await hre.reef.getSignerByName("Acc");
   const ERC20Contract = await hre.reef.getContractFactory("ERC20Contract", signer);
-  const args = ["198357219385752193875123"];
+  const args = ["180000000000000000000000000000000000"];
   const erc20CContract = await ERC20Contract.deploy(...args);
   await erc20CContract.deployed();
 
-  // Just to make sure crawler recognizes contract first!
-  // wait will be handled by api on the next update
-  await wait(4000);
   await hre.reef.verifyContract(erc20CContract.address, "ERC20Contract", args);
-
 }
 
 main()

@@ -5,8 +5,8 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { HardhatEthers, ProxyProvider } from "../types";
 import { throwError } from "../utils";
-import { EthersSigner } from "./signers/EthersSigner";
 
+import { EthersSigner } from "./signers/EthersSigner";
 import { ProxySigner } from "./signers/ProxySigner";
 
 export default class implements ProxyProvider {
@@ -20,13 +20,13 @@ export default class implements ProxyProvider {
 
   public async getSigner(address: string) {
     const ethSigner = await this.eth.getSigner(address);
-    return await EthersSigner.create(ethSigner);
+    return EthersSigner.create(ethSigner);
   }
 
   public async getSigners() {
     const ethSigners = await this.eth.getSigners();
     const singers = await Promise.all(
-      ethSigners.map(async (signer) => await EthersSigner.create(signer))
+      ethSigners.map(async (signer) => EthersSigner.create(signer))
     );
     return singers;
   }
@@ -44,11 +44,7 @@ export default class implements ProxyProvider {
     address: string,
     signer?: ProxySigner
   ): Promise<Contract> {
-    return this.eth.getContractAt(
-      nameOrAbi,
-      address,
-      signer as EthersSigner
-    );
+    return this.eth.getContractAt(nameOrAbi, address, signer as EthersSigner);
   }
 
   public async getContractFactory(
@@ -67,6 +63,12 @@ export default class implements ProxyProvider {
     );
   }
 
+  public async verifyContract(address: string, name: string, args: any) {
+    console.warn(
+      "Ether proxy did not verify contract. Use hardhat ether scan library to verify contract!"
+    );
+  }
+
   private async resolveSigner(
     signer?: ProxySigner | string
   ): Promise<EthersSigner> {
@@ -75,13 +77,9 @@ export default class implements ProxyProvider {
       return signers[0];
     }
     if (typeof signer === "string") {
-      return await this.getSigner(signer);
+      return this.getSigner(signer);
     }
     return signer as EthersSigner;
-  }
-
-  async verifyContract(address: string, name: string, args: any) {
-   console.warn("Ether proxy did not verify contract. Use hardhat ether scan library to verify contract!");
   }
 }
 
