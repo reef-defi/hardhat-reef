@@ -142,7 +142,7 @@ export default class ReefProxy implements ProxyProvider {
       { sourceNames, solidityFilesCache }
     );
     
-    const contractRegex = new RegExp(`contract ${name} {`);
+    const contractRegex = new RegExp(`contract ${name}.*{`);
     const contractFile = dependencyGraph
       .getResolvedFiles()
       .find((file) => file.content.rawContent.match(contractRegex));
