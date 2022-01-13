@@ -142,10 +142,11 @@ export default class ReefProxy implements ProxyProvider {
       { sourceNames, solidityFilesCache }
     );
     
-    const contractRegex = new RegExp(`contract ${name}.*{`);
     const contractFile = dependencyGraph
       .getResolvedFiles()
-      .find((file) => file.content.rawContent.match(contractRegex));
+      .find((file) => 
+        file.content.rawContent.match(new RegExp(`contract ${name}\\s.*{`)) 
+      || file.content.rawContent.match(new RegExp(`contract ${name}{`)));
 
     if (!contractFile) {
       throw new Error("Contract was not found and can not be verified!");
