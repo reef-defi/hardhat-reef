@@ -112,9 +112,6 @@ export default class ReefProxy implements ProxyProvider {
   }
 
   public async verifyContract(address: string, name: string, args: any) {
-    if (this.localhost) {
-      return;
-    }
     if (!this.scanUrl) {
       console.warn(
         "Verification was skipped. Verification URL is missing in config"
