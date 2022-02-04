@@ -10,6 +10,13 @@ export const REEF_CHAIN = "reef";
 export const TESTNET_REEF = "reef_testnet";
 export const MAINNET_REEF = "reef_mainnet";
 
+export interface CustomVerificationArguments {
+  runs: number;
+  target: string;
+  optimization: boolean;
+  compilerVersion: string;
+};
+
 export interface ProxyProvider {
   getContractAt: (
     nameOrAbi: string | any[],
@@ -27,7 +34,7 @@ export interface ProxyProvider {
 
   getProvider(): Promise<Provider>;
 
-  verifyContract(address: string, name: string, args: any): Promise<void>;
+  verifyContract(address: string, name: string, args: any[], customArgs?: Partial<CustomVerificationArguments>): Promise<void>;
 }
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
