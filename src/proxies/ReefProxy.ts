@@ -20,7 +20,7 @@ import {
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import * as taskTypes from "hardhat/types";
 
-import { ProxyProvider, ReefNetworkConfig } from "../types";
+import { CustomVerificationArguments, ProxyProvider, ReefNetworkConfig } from "../types";
 import {
   availableCompilerVersions,
   compress,
@@ -111,7 +111,7 @@ export default class ReefProxy implements ProxyProvider {
     return ReefProxy.wallets[name];
   }
 
-  public async verifyContract(address: string, name: string, args: any) {
+  public async verifyContract(address: string, name: string, args: any[], customArgs?: Partial<CustomVerificationArguments>) {
     if (!this.scanUrl) {
       console.warn(
         "Verification was skipped. Verification URL is missing in config"
@@ -166,24 +166,24 @@ export default class ReefProxy implements ProxyProvider {
 
     const compiler = this.hre.config.solidity.compilers[0];
 
-    const compilerVersion = availableCompilerVersions.find((version) =>
+    const foundCompilerVersion = availableCompilerVersions.find((version) =>
       version.includes(compiler.version)
     );
 
-    if (!compilerVersion) {
+    if (!foundCompilerVersion && !customArgs?.compilerVersion) {
       throw new Error("Compiler version was not found");
     }
 
     const body = {
       name,
-      source: JSON.stringify(source),
-      compilerVersion,
       address,
+      source: JSON.stringify(source),
       arguments: JSON.stringify(args),
       filename: contractFile.sourceName,
-      target: compiler.settings.evmVersion || "london",
-      optimization: `${compiler.settings.optimizer.enabled || false}`,
-      runs: compiler.settings.optimizer.runs || 200,
+      runs: customArgs?.runs || compiler.settings.optimizer.runs || 200,
+      compilerVersion: customArgs?.compilerVersion || foundCompilerVersion,
+      target: customArgs?.target || compiler.settings.evmVersion || "london",
+      optimization: `${customArgs?.optimization || compiler.settings.optimizer.enabled || false}`,
     };
 
     await waitUntilContractExists(this.scanUrl, address);
@@ -195,6 +195,7 @@ export default class ReefProxy implements ProxyProvider {
       })
       .catch((err) => {
         console.log(`Contract ${name} was not verified!`);
+        console.log(err.message);
       });
   }
 

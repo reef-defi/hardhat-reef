@@ -3,7 +3,7 @@ import { Contract, ContractFactory } from "ethers";
 import { HardhatPluginError } from "hardhat/plugins";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { HardhatEthers, ProxyProvider } from "../types";
+import { CustomVerificationArguments, HardhatEthers, ProxyProvider } from "../types";
 import { throwError } from "../utils";
 
 import { EthersSigner } from "./signers/EthersSigner";
@@ -63,7 +63,7 @@ export default class implements ProxyProvider {
     );
   }
 
-  public async verifyContract(address: string, name: string, args: any) {
+  public async verifyContract(address: string, name: string, args: any[], customArgs?: Partial<CustomVerificationArguments>) {
     console.warn(
       "Ether proxy did not verify contract. Use hardhat ether scan library to verify contract!"
     );
