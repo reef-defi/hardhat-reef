@@ -42,19 +42,17 @@ export default class ReefProxy implements ProxyProvider {
   private static provider: Provider | undefined;
   private static wallets: { [name: string]: ProxySigner } = {};
 
-  private localhost: boolean;
   private providerUrl: string;
   private scanUrl?: string;
   private hre: HardhatRuntimeEnvironment;
   private seeds: { [key: string]: string };
 
-  constructor(hre: HardhatRuntimeEnvironment, localhost = false) {
+  constructor(hre: HardhatRuntimeEnvironment) {
     const config = hre.network.config as ReefNetworkConfig;
     console.log(`Listening on: ${config.url}`);
     this.hre = hre;
     this.providerUrl = config.url;
     this.seeds = config.seeds ? config.seeds : {};
-    this.localhost = localhost;
     this.scanUrl = config.scanUrl;
   }
 
