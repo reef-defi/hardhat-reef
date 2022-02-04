@@ -17,10 +17,13 @@ import {
   getSolidityFilesCachePath,
   SolidityFilesCache,
 } from "hardhat/builtin-tasks/utils/solidity-files-cache";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import * as taskTypes from "hardhat/types";
+import taskTypes, { HardhatRuntimeEnvironment } from "hardhat/types";
 
-import { ProxyProvider, ReefNetworkConfig } from "../types";
+import {
+  CustomVerificationArguments,
+  ProxyProvider,
+  ReefNetworkConfig,
+} from "../types";
 import {
   availableCompilerVersions,
   compress,
@@ -31,23 +34,25 @@ import {
 
 import { ProxySigner } from "./signers/ProxySigner";
 
+interface Signers {
+  [name: string]: Signer;
+}
+
 export default class ReefProxy implements ProxyProvider {
   private static provider: Provider | undefined;
   private static wallets: { [name: string]: ProxySigner } = {};
 
-  private localhost: boolean;
   private providerUrl: string;
   private scanUrl?: string;
   private hre: HardhatRuntimeEnvironment;
   private seeds: { [key: string]: string };
 
-  constructor(hre: HardhatRuntimeEnvironment, localhost = false) {
+  constructor(hre: HardhatRuntimeEnvironment) {
     const config = hre.network.config as ReefNetworkConfig;
     console.log(`Listening on: ${config.url}`);
     this.hre = hre;
     this.providerUrl = config.url;
     this.seeds = config.seeds ? config.seeds : {};
-    this.localhost = localhost;
     this.scanUrl = config.scanUrl;
   }
 
@@ -111,7 +116,12 @@ export default class ReefProxy implements ProxyProvider {
     return ReefProxy.wallets[name];
   }
 
-  public async verifyContract(address: string, name: string, args: any) {
+  public async verifyContract(
+    address: string,
+    name: string,
+    args: any[],
+    customArgs?: Partial<CustomVerificationArguments>
+  ) {
     if (!this.scanUrl) {
       console.warn(
         "Verification was skipped. Verification URL is missing in config"
@@ -141,12 +151,14 @@ export default class ReefProxy implements ProxyProvider {
       TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH,
       { sourceNames, solidityFilesCache }
     );
-    
+
     const contractFile = dependencyGraph
       .getResolvedFiles()
-      .find((file) => 
-        file.content.rawContent.match(new RegExp(`contract ${name}\\s.*{`)) 
-      || file.content.rawContent.match(new RegExp(`contract ${name}{`)));
+      .find(
+        (file) =>
+          file.content.rawContent.match(new RegExp(`contract ${name}\\s.*{`)) ||
+          file.content.rawContent.match(new RegExp(`contract ${name}{`))
+      );
 
     if (!contractFile) {
       throw new Error("Contract was not found and can not be verified!");
@@ -166,24 +178,26 @@ export default class ReefProxy implements ProxyProvider {
 
     const compiler = this.hre.config.solidity.compilers[0];
 
-    const compilerVersion = availableCompilerVersions.find((version) =>
+    const foundCompilerVersion = availableCompilerVersions.find((version) =>
       version.includes(compiler.version)
     );
 
-    if (!compilerVersion) {
+    if (!foundCompilerVersion && !customArgs?.compilerVersion) {
       throw new Error("Compiler version was not found");
     }
 
     const body = {
       name,
-      source: JSON.stringify(source),
-      compilerVersion,
       address,
+      source: JSON.stringify(source),
       arguments: JSON.stringify(args),
       filename: contractFile.sourceName,
-      target: compiler.settings.evmVersion || "london",
-      optimization: `${compiler.settings.optimizer.enabled || false}`,
-      runs: compiler.settings.optimizer.runs || 200,
+      runs: customArgs?.runs || compiler.settings.optimizer.runs || 200,
+      compilerVersion: customArgs?.compilerVersion || foundCompilerVersion,
+      target: customArgs?.target || compiler.settings.evmVersion || "london",
+      optimization: `${
+        customArgs?.optimization || compiler.settings.optimizer.enabled || false
+      }`,
     };
 
     await waitUntilContractExists(this.scanUrl, address);
@@ -195,6 +209,7 @@ export default class ReefProxy implements ProxyProvider {
       })
       .catch((err) => {
         console.log(`Contract ${name} was not verified!`);
+        console.log(err.message);
       });
   }
 
@@ -247,26 +262,33 @@ export default class ReefProxy implements ProxyProvider {
 
       signingKeys.addKeyringPair(seedPairs.map(({ pair }) => pair));
 
-      const seedSigners = seedPairs.reduce((acc, { name, pair }) => {
-        acc[name] = new Signer(ReefProxy.provider!, pair.address, signingKeys);
-        return acc;
-      }, {} as { [name: string]: Signer });
+      const seedSigners: Signers = seedPairs.reduce(
+        (acc: Signers, { name, pair }) => {
+          acc[name] = new Signer(
+            ReefProxy.provider!,
+            pair.address,
+            signingKeys
+          );
+          return acc;
+        },
+        {}
+      );
 
-      const testSignersByName = [
+      const testSignersByName: Signers = [
         "alice",
         "bob",
         "charlie",
         "dave",
         "eve",
         "ferdie",
-      ].reduce((acc, name) => {
+      ].reduce((acc: Signers, name) => {
         acc[name] = new Signer(
           ReefProxy.provider!,
           testPairs[name].address,
           signingKeys
         );
         return acc;
-      }, {} as { [name: string]: Signer });
+      }, {});
 
       ReefProxy.wallets = { ...seedSigners, ...testSignersByName };
     }

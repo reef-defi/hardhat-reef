@@ -42,23 +42,18 @@ describe("Unit testing", function () {
       assert.notEqual(alice, undefined, "Alice does not exist!");
     });
     it("Ensure default signers", async function () {
-      Promise.resolve().then(() => {
-        const promisses = [
-          "alice",
-          "bob",
-          "charlie",
-          "dave",
-          "eve",
-          "ferdie",
-        ].forEach(async (signerName) => {
-          const signer = await this.hre.reef.getSignerByName(signerName);
-          assert.notEqual(
-            signer,
-            undefined,
-            `Signer name: ${signerName} does not exist!`
-          );
-        });
-      });
+      await Promise.all(
+        ["alice", "bob", "charlie", "dave", "eve", "ferdie"].map(
+          async (signerName) => {
+            const signer = await this.hre.reef.getSignerByName(signerName);
+            assert.notEqual(
+              signer,
+              undefined,
+              `Signer name: ${signerName} does not exist!`
+            );
+          }
+        )
+      );
     });
   });
 

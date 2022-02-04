@@ -1,6 +1,5 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Signer } from "ethers";
-import ethers from "ethers";
+import ethers, { Signer } from "ethers";
 
 import { ProxySigner } from "./ProxySigner";
 

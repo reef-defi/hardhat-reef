@@ -285,8 +285,7 @@ Run interaction script for the Reef test network: `yarn hardhat run script/inter
 ### Contract verification
 
 Hardhat reef also supports verifying contract from the Reef chain!
-Here is an example of contract deploymant and verification combined:
-
+Here is a basic example of contract deploymant and verification combined:
 
 ```javascript
 const hre = require("hardhat");
@@ -301,6 +300,50 @@ async function main() {
   await erc20CContract.deployed();
 
   await hre.reef.verifyContract(erc20CContract.address, "ERC20Contract", args);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
+#### Custom compiler arguments
+
+If your project uses multiple compiler versions it will be necessary to specify compiler versions to verify the contract.
+Users can therefore specify partial compiler config containing:
+- compilerVersion: specific [compiler version](https://etherscan.io/solcversions) in format `v0.8.4+commit.c7e474f2`
+- optimization: boolean flag that indicates if contracts were optimized
+- runs: specific number of runs that were used when contract was compiled
+- target: specific [compiler target](https://docs.soliditylang.org/en/v0.8.11/using-the-compiler.html#target-options) ['london', 'berlin', ...]
+
+Here is one example how to use it. We will create the same contract as before, but here we will specify all compiler options.
+
+```javascript
+const hre = require("hardhat");
+
+const wait = async (ms) => new Promise((res) => setTimeout(res, ms));
+
+async function main() {
+  const signer = await hre.reef.getSignerByName("Acc");
+  const ERC20Contract = await hre.reef.getContractFactory("ERC20Contract", signer);
+  const args = ["180000000000000000000000000000000000"];
+  const erc20CContract = await ERC20Contract.deploy(...args);
+  await erc20CContract.deployed();
+
+  await hre.reef.verifyContract(
+    erc20CContract.address, 
+    "ERC20Contract",
+    args,
+    {
+      runs: 200, // We are still placing runs event tho optimization is set to false
+      target: 'london', // Default target version
+      optimization: false, // We are not using contract optimization
+      compilerVersion: "v0.8.4+commit.c7e474f2", // Examples project uses 0.8.4 solidity compiler version
+    }
+  );
 }
 
 main()

@@ -7,7 +7,7 @@ import { MAINNET_REEF, ProxyProvider, REEF_CHAIN, TESTNET_REEF } from "./types";
 export const proxyBuilder = (hre: HardhatRuntimeEnvironment): ProxyProvider => {
   switch (hre.network.name) {
     case REEF_CHAIN:
-      return new ReefProxy(hre, true);
+      return new ReefProxy(hre);
     case TESTNET_REEF:
       return new ReefProxy(hre);
     case MAINNET_REEF:

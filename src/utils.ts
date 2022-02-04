@@ -3,8 +3,6 @@ import { HardhatPluginError } from "hardhat/internal/core/errors";
 
 import { ReefNetworkConfig } from "./types";
 
-const verification_test = "http://localhost:3000";
-
 export const ensureFilePath = async (filePath: string) => {
   if (!(await fsExtra.pathExists(filePath))) {
     throw new HardhatPluginError(
