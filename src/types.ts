@@ -1,7 +1,6 @@
 import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
 import { Provider } from "@reef-defi/evm-provider";
-import { Contract, ContractFactory } from "ethers";
-import type { ethers } from "ethers";
+import type { Contract, ContractFactory, ethers } from "ethers";
 import { HttpNetworkConfig } from "hardhat/types";
 
 import { ProxySigner } from "./proxies/signers/ProxySigner";
@@ -15,7 +14,7 @@ export interface CustomVerificationArguments {
   target: string;
   optimization: boolean;
   compilerVersion: string;
-};
+}
 
 export interface ProxyProvider {
   getContractAt: (
@@ -34,7 +33,12 @@ export interface ProxyProvider {
 
   getProvider(): Promise<Provider>;
 
-  verifyContract(address: string, name: string, args: any[], customArgs?: Partial<CustomVerificationArguments>): Promise<void>;
+  verifyContract(
+    address: string,
+    name: string,
+    args: any[],
+    customArgs?: Partial<CustomVerificationArguments>
+  ): Promise<void>;
 }
 
 export interface ReefNetworkConfig extends HttpNetworkConfig {
