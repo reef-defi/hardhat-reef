@@ -324,11 +324,11 @@ const doesContractExist = async (
 
 // Complete await cicle is in pattern: 1+2+3+...+steps.
 // Execution time = steps*(steps+1) / 2 s;
-// I.E. Steps = 10; Execution time = 55s
+// I.E. Steps = 20; Execution time = 380s
 const waitUntilContractExists = async (
   url: string,
   address: string,
-  steps = 10
+  steps = 20
 ): Promise<void> => {
   let delayLength = 1000;
   for (let i = 0; i < steps; i++) {
