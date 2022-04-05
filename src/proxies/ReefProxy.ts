@@ -156,7 +156,7 @@ export default class ReefProxy implements ProxyProvider {
       .getResolvedFiles()
       .find(
         (file) =>
-          file.content.rawContent.match(new RegExp(`contract ${name}\\s.*{`)) ||
+          file.content.rawContent.match(new RegExp(`contract ${name}\\s.*`)) ||
           file.content.rawContent.match(new RegExp(`contract ${name}{`))
       );
 
