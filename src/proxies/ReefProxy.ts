@@ -115,7 +115,6 @@ export default class ReefProxy implements ProxyProvider {
     }
     return ReefProxy.wallets[name];
   }
-
   public async verifyContract(
     address: string,
     name: string,
@@ -185,7 +184,6 @@ export default class ReefProxy implements ProxyProvider {
     if (!foundCompilerVersion && !customArgs?.compilerVersion) {
       throw new Error("Compiler version was not found");
     }
-
     const body = {
       name,
       address,
@@ -198,6 +196,7 @@ export default class ReefProxy implements ProxyProvider {
       optimization: `${
         customArgs?.optimization || compiler.settings.optimizer.enabled || false
       }`,
+      license: this.extractLicense(source[contractFile.sourceName]),
     };
 
     await waitUntilContractExists(this.scanUrl, address);
@@ -211,6 +210,19 @@ export default class ReefProxy implements ProxyProvider {
         console.log(`Contract ${name} was not verified!`);
         console.log(err.message);
       });
+  }
+
+  private extractLicense(
+    contract: string,
+    licenseIndicator = "SPDX-License-Identifier"
+  ): string {
+    if (!contract.includes(licenseIndicator)) {
+      return "";
+    }
+    return contract
+      .split("\n")
+      .find((line) => line.includes(licenseIndicator))!
+      .split(licenseIndicator)[1];
   }
 
   private async getWallets(): Promise<ProxySigner[]> {
