@@ -2287,7 +2287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/dev-config@npm:^0.1.13":
+"@open-web3/dev-config@npm:0.1.13":
   version: 0.1.13
   resolution: "@open-web3/dev-config@npm:0.1.13"
   dependencies:
@@ -2414,7 +2414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-web3/scanner@npm:^1.0.1":
+"@open-web3/scanner@npm:1.0.1":
   version: 1.0.1
   resolution: "@open-web3/scanner@npm:1.0.1"
   peerDependencies:
@@ -2746,12 +2746,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reef-defi/evm-provider@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "@reef-defi/evm-provider@npm:1.0.6"
+"@reef-defi/evm-provider@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "@reef-defi/evm-provider@npm:1.0.7"
   dependencies:
-    "@open-web3/dev-config": ^0.1.13
-    "@open-web3/scanner": ^1.0.1
+    "@open-web3/dev-config": 0.1.13
+    "@open-web3/scanner": 1.0.1
     "@polkadot/api": ~6.4.2
     "@polkadot/keyring": ~7.9.2
     "@polkadot/rpc-provider": ~6.4.2
@@ -2762,9 +2762,10 @@ __metadata:
     "@reef-defi/api-derive": ^1.0.4
     "@reef-defi/type-definitions": ^1.0.4
     "@reef-defi/types": ^1.0.4
+    "@typescript-eslint/eslint-plugin": 4.8.1
     blakejs: ~1.1.0
     ethers: ~5.5.0
-  checksum: 77497fee3b9d935fe0a10380cb9b8a8104cd960bbef8a2c303a5c9f09ad05619709c599b757b6dafc8b18dc4d556410191cd9d7e0afb75ef9a3a220b49c953f4
+  checksum: a1b96371721eaf34e000e92f0a1a1d5323f6578684101de26e0579cedb0973af9f7704893b7bac09cf47ea1164dc3f1655d71f50bdd2d553ed444130f2655fe4
   languageName: node
   linkType: hard
 
@@ -2773,7 +2774,7 @@ __metadata:
   resolution: "@reef-defi/hardhat-reef@workspace:."
   dependencies:
     "@nomiclabs/hardhat-ethers": ^2.0.2
-    "@reef-defi/evm-provider": ^1.0.6
+    "@reef-defi/evm-provider": ^1.0.7
     "@types/chai": ^4.1.7
     "@types/fs-extra": ^5.0.4
     "@types/mocha": ^5.2.6
